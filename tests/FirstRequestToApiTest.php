@@ -51,9 +51,7 @@ class ApiRequestTest extends TestCase
                 
                 );   
      
-        $this->assertEquals( 200, $response->getStatusCode() ); 
-        
-        var_dump($response->getBody()->getContents());
+        $this->assertEquals( 200, $response->getStatusCode() );       
        
     }
 }

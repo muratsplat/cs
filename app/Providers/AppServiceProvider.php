@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Libs\ClearSettle\Resource\ApiClientManager;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->registerClearSettleApiClients();
+    }
+    
+    /**
+     * Register ClearSettle Api Client Manager
+     * 
+     * @return void
+     */
+    protected function registerClearSettleApiClients()
+    {
+        $this->app->singleton('app.clearsettle.clients', function($app) {            
+            
+            return new ApiClientManager($app);    
+        });
     }
 }

@@ -4,26 +4,34 @@ return [
 
     /**
      * This option can be useful to change connection url 
-     * to access Bumin API
+     * to access ClearSettle API
      * 
      * Options:
-     *  https://livereportingapi.clearsettle.com/api/v3
-     *  https://testreportingapi.clearsettle.com/api/v3
+     *  - live
+     *  - test  
      * 
      */
-    'default' => env('API_DEFAULT', 'test'),
-    
+    'default' => env('API_DEFAULT', 'test'),    
     
     /**
-     * We have two urls to access Bumin API
+     * We have two urls to access ClearSettle API
      * 
      * In Production it can selected one of all.
      */
-    'urls' => [
+    'apis' => [
         
-        'live'  => 'https://livereportingapi.clearsettle.com/api/v3',
+        'live'  => [
+                'baseUrl'   => 'https://livereportingapi.clearsettle.com/api/v3',
+                'verify'    => true, // enable ssl
+                'timeout'   => 3,
+            ],
         
-        'test'  => 'https://testreportingapi.clearsettle.com/api/v3',
+        'test'  => [
+                'baseUrl'   => 'https://testreportingapi.clearsettle.com/api/v3',
+                'verify'    => true,
+                'timeout'   => 2,
+            
+            ],
     ], 
     
 
