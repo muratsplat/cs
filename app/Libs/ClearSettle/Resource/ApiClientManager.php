@@ -10,7 +10,7 @@ use Illuminate\Contracts\Container\Container;
 /**
  * This class manages ClearSettle API client
  * 
- * This class will create a http client by looking app config files. 
+ * This class will create a pre-configured http client by looking app config files. 
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
@@ -27,17 +27,14 @@ class ApiClientManager {
     protected $config;
     
         /**
-         * Create a new Resource Factory instance.
+         * Create a new Api Client Manager instance.
          *
          * @param  \Illuminate\Contracts\Container\Container  $container
-         * @return void
          */
         public function __construct(Container $container)
         {                        
             $this->container    = $container;            
-            
-            //$this->log          = $container->make('log');
-            
+       
             $this->config       = $container->make('config');            
         }        
    
