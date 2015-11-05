@@ -3,6 +3,7 @@
 namespace App\Providers\ClearSettle;
 
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
 /**

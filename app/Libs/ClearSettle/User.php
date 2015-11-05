@@ -5,6 +5,9 @@ namespace App\Libs\ClearSettle;
 use Exception;
 use ArrayAccess;
 use Illuminate\Contracts\Auth\Authenticatable;
+//use JsonSerializable;
+//use Illuminate\Contracts\Support\Jsonable;
+//use Illuminate\Contracts\Support\Arrayable;
 
 /**
  * Description of User
@@ -12,8 +15,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
 class User implements ArrayAccess, Authenticatable
-{
-   
+{   
     
     /**
      * User Attributes

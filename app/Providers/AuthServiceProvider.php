@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Providers\ClearSettle\ApiUserProvider;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         parent::registerPolicies($gate);
 
-        //
+//        Auth::extend('ClearSettleApi', function($app) {
+//                      // return new RiakUserProvider($app['riak.connection']);
+//        });
     }
 }
