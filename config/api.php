@@ -11,7 +11,20 @@ return [
      *  https://testreportingapi.clearsettle.com/api/v3
      * 
      */
-    'base_url' => env('API_BASE_URL', null),
+    'default' => env('API_DEFAULT', 'test'),
+    
+    
+    /**
+     * We have two urls to access Bumin API
+     * 
+     * In Production it can selected one of all.
+     */
+    'urls' => [
+        
+        'live'  => 'https://livereportingapi.clearsettle.com/api/v3',
+        
+        'test'  => 'https://testreportingapi.clearsettle.com/api/v3',
+    ], 
     
 
 ];
