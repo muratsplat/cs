@@ -107,7 +107,7 @@ abstract class Request implements MessageProvider
          */
         public function getMessageBag() 
         {            
-            return $this->getMessageBag();            
+            return $this->messageBag;            
         }   
         
         
@@ -126,9 +126,7 @@ abstract class Request implements MessageProvider
             $httpVerb   = key($params);
             
             $url        = array_get($params, $httpVerb);
-            
-            $response = null;
-            
+                       
             /**
              * Clear Settle Api http status code is unexpected.
              * User login is not success, Response status code returns 500.
@@ -137,23 +135,30 @@ abstract class Request implements MessageProvider
              * 
              * Look at : https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error
              * 
-             * If this point is fixed, all try block can  be deleted..
+             * TODO:
+             * The api should harmonize W3W standarts.  
+             * If this point of the api is fixed, all try block can  be deleted..
              */
             try {
                 
                 $response   = $this->client->request($httpVerb, $url, $options);
                 
             } catch (ServerException $exc) {
-                
-                if (  $exc->getResponse()->getBody()->getSize() === 0 ) {
-                    
-                    throw $exc;                   
-                }
-                
+                                                             
                 $response = $exc->getResponse();
-            }            
+                
+            } catch (Exception $e) {
+                
+                $this->catchAndReport($e);
+                        
+                $response = $e->getResponse();
+                             
+            } 
             
-            $this->setResponse($response);
+            if (! is_null($response) ) {
+                
+                 $this->setResponse($response);           
+            }          
             
             return $this;
         }        
@@ -320,12 +325,18 @@ abstract class Request implements MessageProvider
             }            
              catch (Exception $e) {
                 
-                if (\App()->runningUnitTests() ) {
+                if (!\App()->runningUnitTests() ) {
                     
                     throw $e;
                 }
                 
-                $this->log->critical('Unknown Error: ', ['msg' => $e->getMessage(), 'line' => $e->getLine()]);
+                $this->log->critical('Unknown Error: ', 
+                                        [
+                                            'msg'   => $e->getMessage(), 
+                                            'file'  => $e->getLine(),
+                                            
+                                        ]
+                    );
                 
                 $this->messageBag->add('general_error', 'Service transfer is failed !');
             }      
@@ -346,7 +357,8 @@ abstract class Request implements MessageProvider
                 'response_headers'      => $ex->getResponse(),
                 'response_status_code'  => null,
                 'msg'                   => $ex->getMessage(), 
-                'line'                  => $ex->getFile()
+                'file'                  => $ex->getFile(),
+                'line'                  => $ex->getLine(),
             ];
             
             if ($ex->hasResponse()) {

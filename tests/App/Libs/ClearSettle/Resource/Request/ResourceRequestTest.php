@@ -8,9 +8,9 @@
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-//use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Handler\MockHandler;
-//use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\RequestException;
 use App\Libs\ClearSettle\Resource\Request\Request;
 
 use Mockery as m;
@@ -82,14 +82,10 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);   
         
-        $fooRquest = new FooRequest($userM, $client);
-        try {
+        $fooRquest = new FooRequest($userM, $client);     
             
-             $fooRquest->request('create', []);
-            
-        } catch (GuzzleHttp\Exception\ServerException $ex) {
-
-        }
+        $fooRquest->request('create', []);
+     
         $this->assertTrue($fooRquest->isReady());
         
         $this->assertFalse($fooRquest->isApproved());    
@@ -99,6 +95,51 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $this->assertTrue($fooRquest->isJSON());
         
         $this->assertEquals($json->status, 'DECLINED');        
+       
+    }
+    
+    /**
+     * A basic functional test example.
+     *
+     * @return void
+     */
+    public function testErrorException()
+    {           
+        $userM   = m::mock('App\Libs\ClearSettle\User');   
+            
+           // the example of login sson response
+        $responseBody = '{"message":"Bla blaa","status":"DECLINED"}';
+        
+        
+        // Create a mock and queue two responses.
+        $mock = new MockHandler([
+             new Response(500, ['X-Foo' => 'Bar'], $responseBody),      
+              new RequestException("Error Communicating with Server", new GuzzleRequest('GET', 'test'))
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);   
+        
+        $fooRquest = new FooRequest($userM, $client);     
+            
+        $fooRquest->request('create', []);
+     
+        $this->assertTrue($fooRquest->isReady());
+        
+        $this->assertFalse($fooRquest->isApproved());    
+        
+        $json = $fooRquest->convertResponseBodyToJSON();
+        
+        $this->assertTrue($fooRquest->isJSON());
+        
+        $this->assertEquals($json->status, 'DECLINED');      
+        
+        $this->assertTrue($fooRquest->getMessageBag()->isEmpty());
+        // adding an error for throwing "RequestException"
+        $fooRquest->request('create', []);
+        
+        $this->assertFalse($fooRquest->getMessageBag()->isEmpty());
+        
        
     }
     
