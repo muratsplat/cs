@@ -69,6 +69,24 @@ class User implements ArrayAccess, Authenticatable
             return $pass;
             
         }
+        
+         /**
+         * Get the email for the user.
+         *
+         * @return string
+         */
+        public function getAuthEmail() 
+        {
+            $email =  array_get($this->attributes, 'email', null);
+            
+            if ( is_null($email) ) {
+                
+                throw new Exception("Email value is needed !");
+            }
+            
+            return $email;
+            
+        }
 
         /**
          * Get the token value for the "remember me" session.

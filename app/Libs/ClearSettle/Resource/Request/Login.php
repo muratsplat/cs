@@ -24,7 +24,7 @@ Class Login  extends Request
     
     
     
-        public function send()
+        public function login()
         {
            
             
