@@ -86,8 +86,7 @@ class User implements ArrayAccess, Authenticatable
             
             return $email;
             
-        }
-        
+        }        
         
         /**
          * To create new instance

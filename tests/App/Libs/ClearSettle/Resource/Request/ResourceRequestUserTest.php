@@ -4,11 +4,11 @@
 //use Illuminate\Foundation\Testing\DatabaseMigrations;
 //use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-use App\Libs\ClearSettle\Resource\Request\Login;
+use App\Libs\ClearSettle\Resource\Request\User;
 
 use Mockery as m;
 
-class ResourceRequestLoginTest extends TestCase
+class ResourceRequestUserTest extends TestCase
 {
     /**
      * @var \Mockery\MockInterface 
@@ -29,11 +29,18 @@ class ResourceRequestLoginTest extends TestCase
      */
     public function testBasicExample()
     {           
-        $user   = m::mock('App\Libs\ClearSettle\User');
+        $userM   = m::mock('App\Libs\ClearSettle\User');
         
-        $client = m::mock('GuzzleHttp\Client');        
+        $client  = m::mock('GuzzleHttp\Client');        
         
-        $request = new Login($user, $client);       
+        $userRequest = new User($userM, $client);       
+        
+        $params  = $userRequest->getRequestParams('login');
+        
+        $this->assertEquals(['POST' => '/merchant/user/login'], $params);
+        
+        $userRequest->login();
+       
     }
     
    
