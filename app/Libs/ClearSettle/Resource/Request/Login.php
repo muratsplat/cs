@@ -20,16 +20,58 @@ Class Login  extends Request
      *
      * @var string 
      */
-    protected $url = '/merchant/user/login';
+    protected $login = '/merchant/user/login';
     
-    
+    /**
+     * The url for merchant information.
+     *
+     * @var string 
+     */
+    protected $get = '/merchant/user/get';
+
     
         public function login()
         {
-           
+            $options    = $this->getFormParamsForLogin();
             
+            $response   = $this->request('POST', $this->login, $options);
+                
+            $status     = $response->getStatusCode();
+            if ( $response->getStatusCode() === 200
+        }
+        
+        
+        /**
+         * 
+         * @return type
+         */
+        protected function getFormParamsForLogin()
+        {
             
+            list($email, $password) = $this->getUserCredentials();
             
+            // References: http://docs.guzzlephp.org/en/latest/request-options.html#form-params
+            return [
+                        'form_params' =>
+                            
+                            [
+                                'email'     => $email,
+                                'password'  => $password,
+                            ]
+                
+                    ];           
+        }
+        
+        
+        
+        /**
+         * To get user Credentials
+         * 
+         * @return array    [email, password]
+         */
+        private function getUserCredentials()
+        {
+            return [$this->user->getAuthEmail(), $this->user->getAuthPassword()];
         }
     
       
