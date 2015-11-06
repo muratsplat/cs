@@ -54,4 +54,32 @@ class ApiRequestTest extends TestCase
         $this->assertEquals( 200, $response->getStatusCode() );       
        
     }
+    
+    /**
+     * A basic functional test example.
+     *
+     * @return void
+     */
+    public function testWrongPassword()
+    {      
+        
+        $response = $this->client->post(
+                'merchant/user/login', 
+                [
+                    'verify'        => true,
+                    'form_params'   => [
+                        
+                        'email'     => 'demo@bumin.com.tr',
+                        'password'  => 'secret'
+                    ],
+                
+                ]
+                
+                );   
+        
+        $statusCode = $response->getStatusCode() ;
+     
+        $this->assertEquals( 200, $statusCode );       
+       
+    }
 }

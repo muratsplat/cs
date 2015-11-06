@@ -126,8 +126,34 @@ abstract class Request implements MessageProvider
             $httpVerb   = key($params);
             
             $url        = array_get($params, $httpVerb);
-           
-            $this->client->request($httpVerb, $url, $options);
+            
+            $response = null;
+            
+            /**
+             * Clear Settle Api http status code is unexpected.
+             * User login is not success, Response status code returns 500.
+             * 
+             * In normal scenario, the status code should be like 401.
+             * 
+             * Look at : https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error
+             * 
+             * If this point is fixed, all try block can  be deleted..
+             */
+            try {
+                
+                $response   = $this->client->request($httpVerb, $url, $options);
+                
+            } catch (ServerException $exc) {
+                
+                if (  $exc->getResponse()->getBody()->getSize() === 0 ) {
+                    
+                    throw $exc;                   
+                }
+                
+                $response = $exc->getResponse();
+            }            
+            
+            $this->setResponse($response);
             
             return $this;
         }        
@@ -161,7 +187,7 @@ abstract class Request implements MessageProvider
          */
         public function isReady()
         {            
-            return ! $this->response;
+            return is_object($this->response);
         }
         
         /**
@@ -174,10 +200,10 @@ abstract class Request implements MessageProvider
             if ( ! $this->isReady() ) { return false; }
             
             $body = $this->getBodyOnResponse();
-            
-            $jSon = json_encode($body);
-            
-            return ! is_null($jSon);
+                       
+            $jSon = json_decode($body);   
+                
+            return is_object($jSon);
         }
         
         /**
@@ -188,7 +214,7 @@ abstract class Request implements MessageProvider
          */
         protected function getBodyOnResponse()
         {
-            if ( $this->isReady() && $this->response->getBody()->eof())  {
+            if ( $this->isReady() && $this->response->getBody())  {
                 
                    return $this->response->getBody();
             }
@@ -205,7 +231,7 @@ abstract class Request implements MessageProvider
         {
             return $this->isReady() && $this->isJSON() 
                     
-                        ? json_encode($this->getBodyOnResponse()->getContents()) 
+                        ? json_decode($this->getBodyOnResponse()) 
                         : null;
         }
         
@@ -234,12 +260,12 @@ abstract class Request implements MessageProvider
          * 
          * @return bool
          */
-        protected function isApproved()                
+        public function isApproved()                
         {
             if ( $this->isReady() && $this->isJSON() ) {
                 
                 $message = $this->convertResponseBodyToJSON();
-                
+                               
                 return $message->status === self::APPROVED;
             }
             
