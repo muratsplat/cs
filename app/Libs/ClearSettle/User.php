@@ -87,6 +87,18 @@ class User implements ArrayAccess, Authenticatable
             return $email;
             
         }
+        
+        
+        /**
+         * To create new instance
+         * 
+         * @param array $attributes
+         * @return self
+         */
+        public static function create(array $attributes=[]) 
+        {
+            return new static($attributes);        
+        }
 
         /**
          * Get the token value for the "remember me" session.
