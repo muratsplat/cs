@@ -87,4 +87,5 @@ class ApiClientManagerTest extends TestCase
         
         $this->assertNotNull($manager);    
     }
+
 }

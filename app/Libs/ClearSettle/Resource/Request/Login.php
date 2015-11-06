@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libs\ClearSettle\Request;
+namespace App\Libs\ClearSettle\Resource\Request;
 
 //use Exception;
 
@@ -14,6 +14,23 @@ namespace App\Libs\ClearSettle\Request;
  */
 Class Login  extends Request
 {   
+    
+    /**
+     * The url for login request
+     *
+     * @var string 
+     */
+    protected $url = '/merchant/user/login';
+    
+    
+    
+        public function send()
+        {
+           
+            
+            
+            
+        }
     
       
 }

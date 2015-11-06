@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libs\ClearSettle\Request;
+namespace App\Libs\ClearSettle\Resource\Request;
 
 use Exception;
 use GuzzleHttp\Client;
@@ -20,7 +20,7 @@ Abstract Class Request implements MessageProvider
     
     /**
      * User Attributes
-     * @var array
+     * @var \App\Libs\ClearSettle\User
      */
     protected $user;
     
