@@ -3,7 +3,7 @@
 namespace App\Contracts\Repository;
 
 /**
- * Base Interface for repositories
+ * Interface for User Repository 
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */

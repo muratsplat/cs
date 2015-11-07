@@ -8,8 +8,11 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
 /**
- * This Provider uses Eloquent and ApiClient to verify user credentials.
+ * This Provider uses Eloquent and Api Client to verify user credentials.
  * 
+ * This provider not saved user password on database or not read password on database
+ * via Eloquent. User's password only sended to API by incjected pre-configured http client,
+ * and credentials verify job gets action on API server side... 
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
