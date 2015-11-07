@@ -14,7 +14,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
-class User implements ArrayAccess, Authenticatable
+class User implements ArrayAccess, Authenticatable 
 {   
     
     /**
@@ -197,6 +197,18 @@ class User implements ArrayAccess, Authenticatable
         public function __isset($name) 
         {
             return $this->offsetExists($name);        
+        }       
+        
+        /**
+         * Set the jwt token value for the "remember me" session.
+         *
+         * @param  string  $value
+         * @return void
+         */
+        public function setJWTToken($value) 
+        {           
+            
         }
+
 
 }

@@ -11,8 +11,8 @@ use App\Libs\ClearSettle\Resource\ApiClientManager;
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
-class ApiUserProvider implements UserProvider {
-    
+class ApiUserProvider implements UserProvider 
+{    
     
     /**
      * @var  App\Libs\ClearSettle\Resource\ApiClientManager

@@ -49,4 +49,22 @@ class ClearSettleUserTest extends TestCase
         $this->assertEquals('secret', $user->getAuthPassword());
     }
     
+    /**
+     * Functional Test
+     *
+     * @return void
+     */
+    public function testUserSerialize()
+    {   
+        $user = new User();    
+        
+        $user->foo = 'bar';
+        
+        $user->setJWTToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
+iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298');
+       
+        
+        
+    }
+    
 }
