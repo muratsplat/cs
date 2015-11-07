@@ -32,9 +32,9 @@ Class User  extends Request
          * 
          * @return stdClass|null
          */
-        public function login()
+        public function login(array $credentials)
         {                   
-            $options    = $this->getFormParamsForLogin();
+            $options    = $this->getFormParamsForLogin($credentials);
             // sync request, not async !!!
             if ( $this->request('login', $options)->isApproved() ) {
 
@@ -53,36 +53,19 @@ Class User  extends Request
         /**
          * To get user credentials with request options.
          * 
-         * @return array
+         * @return array        ['email' => value, 'password' => value]
          */
-        private function getFormParamsForLogin()
-        {            
-            list($email, $password) = $this->getUserCredentials();
-            
+        private function getFormParamsForLogin(array $credentials)
+        {                        
             // References: http://docs.guzzlephp.org/en/latest/request-options.html#form-params
             return [
                         'form_params' =>
                             
                             [
-                                'email'     => $email,
-                                'password'  => $password,
+                                'email'     => array_get($credentials, 'email', null),
+                                'password'  => array_get($credentials, 'password', null),
                             ]
                 
                     ];           
-        }
-        
-        /**
-         * To get user Credentials
-         * 
-         * @return array    [email, password]
-         */
-        private function getUserCredentials()
-        {
-            return [$this->user->getAuthEmail(), $this->user->getAuthPassword()];
-        }
-        
-        
-        
-    
-      
+        }     
 }

@@ -69,6 +69,7 @@ class ApiUserProvider implements UserProvider
         public function validateCredentials(Authenticatable $user, array $credentials) 
         {
             
+            
         }
         
         

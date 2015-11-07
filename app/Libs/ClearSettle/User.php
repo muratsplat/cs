@@ -5,6 +5,7 @@ namespace App\Libs\ClearSettle;
 use Exception;
 use ArrayAccess;
 use Illuminate\Contracts\Auth\Authenticatable;
+
 //use JsonSerializable;
 //use Illuminate\Contracts\Support\Jsonable;
 //use Illuminate\Contracts\Support\Arrayable;
@@ -30,7 +31,14 @@ class User implements ArrayAccess, Authenticatable
      * @var array
      */
     protected $attributes = [];
-
+    
+    /**
+     * The session used by the guard.
+     *
+     * @var \Symfony\Component\HttpFoundation\Session\SessionInterface
+     */
+    protected $session;
+    
     
         /**
          * Create User Instance
@@ -39,7 +47,9 @@ class User implements ArrayAccess, Authenticatable
          */
         public function __construct(array $attributes=[]) 
         {
-            $this->attributes = $attributes;
+            $this->attributes   = $attributes;
+            
+            $this->session      = \app('session'); 
         }
         
         /**
@@ -59,15 +69,7 @@ class User implements ArrayAccess, Authenticatable
          */
         public function getAuthPassword() 
         {
-            $pass =  array_get($this->attributes, 'password', null);
-            
-            if ( is_null($pass) ) {
-                
-                throw new Exception("Password key is needed !");
-            }
-            
-            return $pass;
-            
+            throw new Exception('This method is not implemented !');
         }
         
          /**
@@ -104,7 +106,10 @@ class User implements ArrayAccess, Authenticatable
          *
          * @return string
          */
-        public function getRememberToken() {}
+        public function getRememberToken() {
+            
+             throw new Exception('This method is not implemented !');
+        }
 
         /**
          * Set the token value for the "remember me" session.
@@ -112,14 +117,20 @@ class User implements ArrayAccess, Authenticatable
          * @param  string  $value
          * @return void
          */
-        public function setRememberToken($value) {}
+        public function setRememberToken($value) 
+        {            
+             throw new Exception('This method is not implemented !');
+        }
 
         /**
          * Get the column name for the "remember me" token.
          *
          * @return string
          */
-        public function getRememberTokenName() {}
+        public function getRememberTokenName() 
+        {
+             throw new Exception('This method is not implemented !');
+        }
         
         /**
 	 * Whether a offset exists
@@ -219,6 +230,11 @@ class User implements ArrayAccess, Authenticatable
         {   
             return $this->attributes['jwt'];            
         }
-
+        
+        
+        public function saveOnSession()
+        {
+            
+        }
 
 }

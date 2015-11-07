@@ -41,12 +41,7 @@ class ClearSettleUserTest extends TestCase
         $this->assertNotTrue(isset($user['noExist']));       
         
         $this->assertNotTrue(isset($user->noExist));
-        
-        $user['password'] = 'secret';
-        
-        $this->assertEquals('secret', $user->password);
-        
-        $this->assertEquals('secret', $user->getAuthPassword());
+      
     }
     
     /**
