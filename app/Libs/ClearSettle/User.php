@@ -230,11 +230,5 @@ class User implements ArrayAccess, Authenticatable
         {   
             return $this->attributes['jwt'];            
         }
-        
-        
-        public function saveOnSession()
-        {
-            
-        }
-
+       
 }

@@ -38,7 +38,11 @@ Class User  extends Request
             // sync request, not async !!!
             if ( $this->request('login', $options)->isApproved() ) {
 
-                return $this->convertResponseBodyToJSON(); 
+                $res =  $this->convertResponseBodyToJSON();
+                
+                $this->setJWTTokenOnUser($res);
+                
+                return $res;
             }   
 
             if ( $this->isReady() && $this->isJSON() ) {
@@ -67,5 +71,19 @@ Class User  extends Request
                             ]
                 
                     ];           
-        }     
+        }
+        
+        
+        /**
+         * To set JWT token on user by given decoded json reponse
+         * 
+         * @param \stdClass $jsonObject
+         */
+        protected function setJWTTokenOnUser(\stdClass $jsonObject)
+        {
+            if ( isset($jsonObject->token) ) {
+                
+                $this->user->setJWTToken($jsonObject->token);
+            }            
+        }
 }

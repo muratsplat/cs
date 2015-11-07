@@ -27,10 +27,12 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(GateContract $gate)
     {
         //parent::registerPolicies($gate);
+        
+        $class = \Config::get('auth.model');
 
-        \Auth::extend('ClearSettleApi', function($app) {
+        \Auth::extend('ClearSettleApi', function($app) use ($class) {
             
-                       return new ApiUserProvider($app['app.clearsettle.clients']);
+                return new ApiUserProvider($app['app.clearsettle.clients'], $class);
         });
     }
 }

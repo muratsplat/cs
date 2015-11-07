@@ -2,54 +2,40 @@
 
 namespace App\Providers\ClearSettle;
 
+use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
 /**
- * Description of ClearSettleApiUserProvider
+ * This Provider uses Eloquent and ApiClient to verify user credentials.
+ * 
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
-class ApiUserProvider implements UserProvider 
+class ApiUserProvider extends EloquentUserProvider implements UserProvider 
 {    
     
     /**
      * @var  App\Libs\ClearSettle\Resource\ApiClientManager
      */
-    protected $clientManager;    
-    
-        
-        public function __construct(ApiClientManager $clients) 
-        {            
-            $this->clientManager = $clients;                        
-        }    
+    protected $clientManager;
     
         /**
-         * Retrieve a user by their unique identifier.
-         *
-         * @param  mixed  $identifier
-         * @return \Illuminate\Contracts\Auth\Authenticatable|null
+         *  Create a new database and API mixed user provider.
+         * 
+         * @param ApiClientManager $clients
+         * @param string    $model  
          */
-        public function retrieveById($identifier){}
-
-        /**
-         * Retrieve a user by their unique identifier and "remember me" token.
-         *
-         * @param  mixed   $identifier
-         * @param  string  $token
-         * @return \Illuminate\Contracts\Auth\Authenticatable|null
-         */
-        public function retrieveByToken($identifier, $token) {}
-
-        /**
-         * Update the "remember me" token for the given user in storage.
-         *
-         * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-         * @param  string  $token
-         * @return void
-         */
-        public function updateRememberToken(Authenticatable $user, $token) {}
+        public function __construct(ApiClientManager $clients, $model) 
+        {   
+            /**
+             * We dont need a hasher..
+             */
+            parent::__construct(null, $model);            
+            
+            $this->clientManager = $clients;           
+        }  
 
         /**
          * Retrieve a user by the given credentials.
@@ -57,7 +43,10 @@ class ApiUserProvider implements UserProvider
          * @param  array  $credentials
          * @return \Illuminate\Contracts\Auth\Authenticatable|null
          */
-        public function retrieveByCredentials(array $credentials) {}
+        public function retrieveByCredentials(array $credentials) 
+        {            
+            return null;            
+        }
 
         /**
          * Validate a user against the given credentials.

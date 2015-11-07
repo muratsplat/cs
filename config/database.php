@@ -84,6 +84,13 @@ return [
             'charset'  => 'utf8',
             'prefix'   => '',
         ],
+        
+        'sqlite_memory' => [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ],
+        
 
     ],
 
