@@ -36,44 +36,30 @@ Class User  extends Request
          * @return stdClass|null
          */
         public function login()
-        {
-            
-            try {                
-                
-                $options    = $this->getFormParamsForLogin();
-                // sync request, not async !!!
+        {                   
+            $options    = $this->getFormParamsForLogin();
+            // sync request, not async !!!
+            if ( $this->request('login', $options)->isApproved() ) {
 
-                if ( $this->request('login', $options)->isApproved() ) {
+                return $this->convertResponseBodyToJSON(); 
+            }   
 
-                    return $this->convertResponseBodyToJSON();                      
+            if ( $this->isReady() && $this->isJSON() ) {
 
-                }   
-
-                if ( $this->isReady() && $this->isJSON() ) {
-
-                    return $this->convertResponseBodyToJSON();                                    
-                }
-                
-                
-                return null;               
-                
-            } catch (Exception $exc) {
-                
-                $this->catchAndReport($exc);
-            }
-            
+                return $this->convertResponseBodyToJSON();                                    
+            }               
+         
             return null;
         }
         
         
         /**
-         * 
+         * To get user credentials with request options.
          * 
          * @return array
          */
         private function getFormParamsForLogin()
-        {
-            
+        {            
             list($email, $password) = $this->getUserCredentials();
             
             // References: http://docs.guzzlephp.org/en/latest/request-options.html#form-params

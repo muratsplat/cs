@@ -15,7 +15,7 @@ use App\Libs\ClearSettle\Resource\Request\Request;
 
 use Mockery as m;
 
-class ResourceRequestUserTest extends TestCase
+class ResourceRequestTest extends TestCase
 {
     /**
      * @var \Mockery\MockInterface 
@@ -25,19 +25,24 @@ class ResourceRequestUserTest extends TestCase
     
     public function setUp() {
         
-        parent::setUp();               
-                       
+        parent::setUp();                            
+    }
+    
+    public function tearDown() {
+        parent::tearDown();
+        
+        m::close();
     }
    
     /**
-     * A basic functional test example.
+     * A basic test
      *
      * @return void
      */
-    public function testBasicExample()
+    public function testBasic()
     {           
         $userM   = m::mock('App\Libs\ClearSettle\User');   
-        // the example of login sson response
+        // the example of login json response
         $responseBody = '{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
 iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVED"}';
         
@@ -62,7 +67,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
     
     
     /**
-     * A basic functional test example.
+     * Http Status Code 500 but Respond has a message..
      *
      * @return void
      */
