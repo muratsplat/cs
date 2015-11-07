@@ -200,14 +200,24 @@ class User implements ArrayAccess, Authenticatable
         }       
         
         /**
-         * Set the jwt token value for the "remember me" session.
-         *
+         * Set the jwt token value 
+         * 
          * @param  string  $value
          * @return void
          */
         public function setJWTToken($value) 
-        {           
-            
+        {   
+            $this->attributes['jwt'] = $value;            
+        }
+        
+        /** 
+         * To get the jwt token value 
+         * 
+         * @return string|null
+         */
+        public function getJWTToken() 
+        {   
+            return $this->attributes['jwt'];            
         }
 
 

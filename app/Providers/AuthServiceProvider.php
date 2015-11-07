@@ -26,10 +26,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(GateContract $gate)
     {
-        parent::registerPolicies($gate);
+        //parent::registerPolicies($gate);
 
-//        Auth::extend('ClearSettleApi', function($app) {
-//                      // return new RiakUserProvider($app['riak.connection']);
-//        });
+        \Auth::extend('ClearSettleApi', function($app) {
+            
+                       return new ApiUserProvider($app['app.clearsettle.clients']);
+        });
     }
 }

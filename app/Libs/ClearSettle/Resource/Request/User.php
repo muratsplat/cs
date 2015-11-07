@@ -2,9 +2,6 @@
 
 namespace App\Libs\ClearSettle\Resource\Request;
 
-use Exception;
-
-
 /**
  * Login Request
  * 
@@ -83,6 +80,9 @@ Class User  extends Request
         {
             return [$this->user->getAuthEmail(), $this->user->getAuthPassword()];
         }
+        
+        
+        
     
       
 }

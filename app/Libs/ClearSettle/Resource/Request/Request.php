@@ -337,7 +337,7 @@ abstract class Request implements MessageProvider
                                         ]
                     );
                 
-                $this->messageBag->add('general_error', 'Service transfer is failed !');
+                $this->messageBag->add('unknown_error', 'Service transfer is failed !');
             }      
                     
         }     
