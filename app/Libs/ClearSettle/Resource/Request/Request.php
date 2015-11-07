@@ -14,16 +14,14 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TransferException;
-use GuzzleHttp\Exception\BadResponseException;
-
-
+//use GuzzleHttp\Exception\BadResponseException;
 //use Psr\Http\Message\StreamInterface    as Stream;
 use Illuminate\Contracts\Support\MessageProvider;
 
 /**
  * Abstract Request
  * 
- * This class  is based to sends request Clear Settle Api..
+ * This class is based to sends request Clear Settle Api..
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
@@ -151,8 +149,7 @@ abstract class Request implements MessageProvider
                 
                 $this->catchAndReport($e);
                         
-                $response = $e->getResponse();
-                             
+                $response = $e->getResponse();                             
             } 
             
             if (! is_null($response) ) {
@@ -317,6 +314,7 @@ abstract class Request implements MessageProvider
                 $this->sendMessageToLogService($e, 'error');
                 
                 $this->messageBag->add('request_error', 'Your request is failed!');
+                
             } catch (TransferException $e) {
                 
                 $this->sendMessageToLogService($e, 'error');
@@ -333,7 +331,8 @@ abstract class Request implements MessageProvider
                 $this->log->critical('Unknown Error: ', 
                                         [
                                             'msg'   => $e->getMessage(), 
-                                            'file'  => $e->getLine(),
+                                            'file'  => $e->getFile(),
+                                            'line'  => $e->getLine(),
                                             
                                         ]
                     );

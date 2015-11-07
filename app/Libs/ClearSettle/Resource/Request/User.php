@@ -68,9 +68,10 @@ Class User  extends Request
         
         /**
          * 
-         * @return type
+         * 
+         * @return array
          */
-        protected function getFormParamsForLogin()
+        private function getFormParamsForLogin()
         {
             
             list($email, $password) = $this->getUserCredentials();

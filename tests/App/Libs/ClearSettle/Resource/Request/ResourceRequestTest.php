@@ -70,9 +70,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
     {           
         $userM   = m::mock('App\Libs\ClearSettle\User');   
         // the example of login sson response
-        $responseBody = '{"message":"Bla blaa","status":"DECLINED"}';
-        
-        
+        $responseBody = '{"message":"Bla blaa","status":"DECLINED"}';       
         
         // Create a mock and queue two responses.
         $mock = new MockHandler([
@@ -99,7 +97,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
     }
     
     /**
-     * A basic functional test example.
+     * Error Exception Test..
      *
      * @return void
      */
@@ -138,16 +136,73 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         // adding an error for throwing "RequestException"
         $fooRquest->request('create', []);
         
-        $this->assertFalse($fooRquest->getMessageBag()->isEmpty());
-        
+        $this->assertFalse($fooRquest->getMessageBag()->isEmpty());        
        
     }
     
+    /**
+     * Scenario:
+     *     Client try to login with wrong credential, 
+     *     The api retuns 401 http status code, and the response body includes 
+     *     that massage:
+     *      '{"code":0,"status":"DECLINED","message":"Error: Merchant User Not Exists"}'
+     * 
+     * Goal: to sure actions in Request Abstract Class 
+     * 
+     * @test
+     * @return void
+     */
+    public function testWrongCredentialWithHttpStatusCode401()
+    {           
+        
+        $mockedLogger = m::mock('Illuminate\Log\Writer');        
+        
+        $mockedLogger->shouldReceive('info')->times(1)->andReturnNull();
+        
+        $app = \app();
+        
+        $app['log'] = $mockedLogger;
+        
+        
+        $userM   = m::mock('App\Libs\ClearSettle\User');               
+           // the example of json response of a login
+        $responseBody = '{"code":0,"status":"DECLINED","message":"Error: Merchant User Not Exists"}';        
+        
+        // Create a mock and queue two responses.
+        $mock = new MockHandler([
+             new Response(401, ['X-Foo' => 'Bar'], $responseBody),                 
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);   
+        
+        $fooRquest = new FooRequest($userM, $client);     
+            
+        $fooRquest->request('create', []);
+     
+        $this->assertTrue($fooRquest->isReady());
+        
+        $this->assertFalse($fooRquest->isApproved());    
+        
+        $json = $fooRquest->convertResponseBodyToJSON();
+        
+        $this->assertTrue($fooRquest->isJSON());
+        
+        $this->assertEquals($json->status, 'DECLINED');      
+        
+        $this->assertFalse($fooRquest->getMessageBag()->isEmpty());
+        
+        $this->assertTrue($fooRquest->getMessageBag()->has('client_error'));      
+    }   
    
 }
 
 
-
+/**
+ * 
+ * FooRequest for ClearSettle Api..
+ * 
+ */
 class FooRequest extends Request {    
     
     protected $requests = [
@@ -156,37 +211,6 @@ class FooRequest extends Request {
           
     ]; 
     
-    
-    public function create()        
-    {        
-        try {                
-               
-            $options    = ['Foo' => 'Bar'];
-            // sync request, not async !!!
-
-            if ( $this->request('create', $options)->isApproved() ) {
-
-                return $this->convertResponseBodyToJSON();                      
-
-            }   
-
-            if ( $this->isReady() && $this->isJSON() ) {
-
-                return $this->convertResponseBodyToJSON();                                    
-            }
-
-
-            return null;               
-
-        } catch (Exception $exc) {
-
-            $this->catchAndReport($exc);
-        }
-
-        return null;
-        
-        
-    }
-    
+     
     
 }
