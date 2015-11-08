@@ -2,10 +2,12 @@
 
 namespace App\Providers\ClearSettle;
 
+use App\Contracts\Repository\User as UserRepo;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
+
 
 /**
  * This Provider uses Eloquent and Api Client to verify user credentials.
@@ -24,20 +26,28 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
      */
     protected $clientManager;
     
+    /**
+     * @var \App\Contracts\Repository\User 
+     */
+    protected $userRepo;
+    
         /**
          *  Create a new database and API mixed user provider.
          * 
          * @param ApiClientManager $clients
          * @param string    $model  
+         * $param
          */
-        public function __construct(ApiClientManager $clients, $model) 
+        public function __construct(ApiClientManager $clients, $model, UserRepo $userRepo) 
         {   
             /**
              * We dont need a hasher..
              */
             parent::__construct(null, $model);            
             
-            $this->clientManager = $clients;           
+            $this->clientManager    = $clients;    
+            
+            $this->userRepo         = $userRepo;
         }  
 
         /**
@@ -48,7 +58,7 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
          */
         public function retrieveByCredentials(array $credentials) 
         {            
-            return null;            
+               
         }
 
         /**

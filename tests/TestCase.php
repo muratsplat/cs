@@ -22,4 +22,32 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         return $app;
     }
+    
+    /**
+     * To call migrations
+     * 
+     * @return void
+     */
+    public function callMigration()
+    {
+        if ( $this->isSqliteOnMemory() ) {
+             
+            \Artisan::call('migrate');    
+            
+            return;
+
+        }        
+        
+        $this->assertTrue(false,'The migrations is not called!' );            
+    }
+    
+    /**
+     * Determine if Db uses sqlite in memory..
+     * 
+     * @return bool
+     */
+    public function isSqliteOnMemory()
+    {
+        return \DB::getDefaultConnection() === 'sqlite_memory';
+    }
 }

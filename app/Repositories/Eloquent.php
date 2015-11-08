@@ -83,5 +83,36 @@ abstract class Eloquent
         public function find($id)
         {            
             return $this->model->newQuery()->find($id);
+        }        
+        
+        /**
+         * To get all 
+         * 
+         * @param array $columns
+         * @return \Illuminate\Database\Eloquent\Collection|static[]
+         */
+        public function all($columns = ['*'])
+        {            
+            return $this->model->all($columns);
+        }
+        
+        /**
+         * To get model
+         * 
+         * @return \Illuminate\Database\Eloquent\Model
+         */
+        public function getModel()
+        {
+            return $this->model;
+        }
+        
+        /**
+         * To get number of models.
+         * 
+         * @return int
+         */
+        public function count() 
+        {
+            return $this->all(['id'])->count();
         }
 }

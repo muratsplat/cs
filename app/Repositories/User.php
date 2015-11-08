@@ -25,5 +25,19 @@ class User  extends Eloquent implements UserInterface
         public function __construct(Model $user) 
         {
            $this->model = $user;       
+        }        
+        
+        /**
+         * To find user, if it is not found,
+         * create new instance..
+         * 
+         * @param string $email
+         * @return 
+         */
+        public function findOrCreateByEmail($email) 
+        {
+            $attributes = ['email' => $email];
+            return  $this->model->firstOrCreate($attributes);           
         }
+        
 }

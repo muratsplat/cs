@@ -50,4 +50,27 @@ interface Base
          * @return \Illuminate\Database\Eloquent\Model|null
          */
         public function find($id);
+        
+                
+        /**
+         * To get all 
+         * 
+         * @param array $columns
+         * @return \Illuminate\Database\Eloquent\Collection|static[]
+         */
+        public function all($columns = ['*']);
+                
+        /**
+         * To get model
+         * 
+         * @return \Illuminate\Database\Eloquent\Model
+         */
+        public function getModel();
+        
+        /**
+         * To get number of models.
+         * 
+         * @return int
+         */
+        public function count();
 }

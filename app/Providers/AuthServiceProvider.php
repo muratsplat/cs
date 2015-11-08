@@ -28,11 +28,13 @@ class AuthServiceProvider extends ServiceProvider
     {
         //parent::registerPolicies($gate);
         
-        $class = \Config::get('auth.model');
+        $model = \Config::get('auth.model');
+        
+        $userRepo = $this->app->make('App\Contracts\Repository\User');
 
-        \Auth::extend('ClearSettleApi', function($app) use ($class) {
+        \Auth::extend('ClearSettleApi', function($app) use ($model, $userRepo) {
             
-                return new ApiUserProvider($app['app.clearsettle.clients'], $class);
+                return new ApiUserProvider($app['app.clearsettle.clients'], $model, $userRepo);
         });
     }
 }
