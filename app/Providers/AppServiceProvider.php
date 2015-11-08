@@ -23,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function register()
-    {
+    {   
+        // User Repository
+        $this->app->bind('App\Contracts\Repository\User', 'App\Repositories\User');
+           
         $this->registerClearSettleApiClients();
     }
     
