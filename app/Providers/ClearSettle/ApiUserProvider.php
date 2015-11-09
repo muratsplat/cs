@@ -7,13 +7,15 @@ use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
+use App\Exceptions\ClearSettle\InvalidCredentialsExc;
 
 
 /**
  * This Provider uses Eloquent and Api Client to verify user credentials.
  * 
- * This provider not saved user password on database or not read password on database
- * via Eloquent. User's password only sended to API by incjected pre-configured http client,
+ * This provider does not save user password or not read password on database
+ * via Eloquent. User's password gets from user request, and than pasword and email 
+ * send to API by incjected pre-configured http client,
  * and credentials verify job gets action on API server side... 
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
@@ -41,7 +43,8 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
         public function __construct(ApiClientManager $clients, $model, UserRepo $userRepo) 
         {   
             /**
-             * We dont need a hasher..
+             * We dont need a hasher. We will send 
+             * user credantial via http post request to the api.
              */
             parent::__construct(null, $model);            
             
@@ -58,8 +61,39 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
          */
         public function retrieveByCredentials(array $credentials) 
         {            
-               
+            $user       = $this->getUserByCredentials($credentials);
+                
+            $password   = array_get($credentials, 'password', null); 
+            
+            //$this->verifyUserByClearSettle($credentials)
+            if (true) {
+                
+                return $user;
+            }
+                               
         }
+        
+        /**
+         * To get User model by given credentials
+         * 
+         * @param array $credentials
+         * @return \Illuminate\Contracts\Auth\Authenticatable
+         * @throws \App\Exceptions\ClearSettle\InvalidCredentialsExc
+         */
+        private function getUserByCredentials(array $credentials)
+        {            
+            $email      = array_get($credentials, 'email', null);
+            
+            $password   = array_get($credentials, 'password', null);
+            
+            if (is_null($password) || is_null($email)) {
+                
+                throw new InvalidCredentialsExc('e-mail or password segments are required !');               
+            }
+            
+            return $this->findOrCreateUserByEmail($email);           
+        }
+        
 
         /**
          * Validate a user against the given credentials.
@@ -71,11 +105,24 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
         public function validateCredentials(Authenticatable $user, array $credentials) 
         {
             
+            return true;
+            //$this->verifyUserByClearSettle($credentials)
+            
+
+            
             
         }
         
-        
-        
-
+        /**
+         * To find user by email, if it is not found,
+         * create new user.
+         * 
+         * @param string $email     user email address
+         * @return \App\User
+         */
+        protected function findOrCreateUserByEmail($email)
+        {
+            return $this->userRepo->findOrCreateByEmail($email);
+        }
     
 }

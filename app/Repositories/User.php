@@ -28,11 +28,11 @@ class User  extends Eloquent implements UserInterface
         }        
         
         /**
-         * To find user, if it is not found,
+         * To find user by given email, if it is not found,
          * create new instance..
          * 
          * @param string $email
-         * @return 
+         * @return \App\User
          */
         public function findOrCreateByEmail($email) 
         {

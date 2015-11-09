@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
     {   
         // User Repository
         $this->app->bind('App\Contracts\Repository\User', 'App\Repositories\User');
+        
+        // JWT Token Repository
+        $this->app->bind('App\Contracts\Repository\JSONWebToken', 'App\Repositories\JSONWebToken');
            
         $this->registerClearSettleApiClients();
     }

@@ -50,7 +50,7 @@ class AppUserRepositoryTest extends TestCase
         $this->assertTrue($user->exists);
         
         $this->assertNotEmpty($repo->all());
-        
+               
         $tryUser  = $repo->findOrCreateByEmail($attr['email']);
         
         $this->assertEquals(1, $repo->count());
