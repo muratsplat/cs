@@ -20,7 +20,9 @@ class ServicesClearSettleApiLoginTest extends TestCase
         $clients = m::mock('App\Libs\ClearSettle\Resource\ApiClientManager');        
         $jwtRepo = m::mock('App\Contracts\Repository\JSONWebToken');
         
-        $login = new ApiLogin($clients, $jwtRepo);  
+        $userRequest = m::mock('App\Libs\ClearSettle\Resource\Request\User');
+        
+        $login = new ApiLogin($clients, $jwtRepo, $userRequest);  
     }
     
     /**
