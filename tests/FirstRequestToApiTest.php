@@ -34,7 +34,7 @@ class ApiRequestTest extends TestCase
      *
      * @return void
      */
-    public function testBasicExample()
+    public function disable_testBasicExample()
     {      
         
         $response = $this->client->post(
@@ -61,7 +61,7 @@ class ApiRequestTest extends TestCase
      *
      * @return void
      */
-    public function DIStestWrongPassword()
+    public function disable_testWrongPassword()
     {      
         
         $response = $this->client->post(

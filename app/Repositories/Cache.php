@@ -40,7 +40,7 @@ abstract class Cache
      *
      * @var int
      */
-    protected $expiration = 30;
+    protected $expiration = 10;
     
         /**
          * Create RepositoryInstance
