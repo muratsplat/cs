@@ -413,6 +413,8 @@ abstract class Request implements MessageProvider
          * To update JWT token for user
          * 
          * @param bool
+         * @throws \App\Exceptions\ClearSettle\JWTokenNotDecodedExc
+         * @throws \App\Exceptions\ClearSettle\JWTokenNotStoredExc 
          */
         public function storeNewJWTokenOnUser()
         {
@@ -434,7 +436,7 @@ abstract class Request implements MessageProvider
                     $this->jwtRepo->storeByUser($this->user, $token);
                     
                     return true;
-            }
+            }            
             
         }
         

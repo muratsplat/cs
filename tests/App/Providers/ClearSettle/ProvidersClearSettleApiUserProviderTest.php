@@ -21,8 +21,21 @@ class ProvidersClearSettleApiUserProviderTest extends TestCase
     public function testBasicExample()
     {  
         
-        $clientManager = m::mock('App\Libs\ClearSettle\Resource\ApiClientManager');
+        $clientManager  = m::mock('App\Libs\ClearSettle\Resource\ApiClientManager');
         
-        $UserProvider = new Provider($clientManager);       
+        $repo           = m::mock('App\Contracts\Repository\User');        
+        
+        $mockedUser     = m::mock('App\User');
+        
+        $repo->shouldReceive('findOrCreateByEmail')->andReturn($mockedUser)->times(1);
+        
+        $userProvider   = new Provider($clientManager, $repo);
+        
+        $credentials    = ['email' => 'foo@bar.com', 'password' => 'secret'];
+        $authedUser     = $userProvider->retrieveByCredentials($credentials);
+        
+        
+        
+        
     }
 }

@@ -31,7 +31,7 @@ Class User  extends Request
     ];    
 
         /**
-         * To send login request using injected User Object
+         * To send login request using given user model
          * 
          * @param array $user
          * @param array $credentials

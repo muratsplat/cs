@@ -24,7 +24,7 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
 {    
     
     /**
-     * @var  App\Libs\ClearSettle\Resource\ApiClientManager
+     * @var  \App\Libs\ClearSettle\Resource\ApiClientManager
      */
     protected $clientManager;
     
@@ -36,18 +36,11 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
         /**
          *  Create a new database and API mixed user provider.
          * 
-         * @param ApiClientManager $clients
-         * @param string    $model  
-         * $param
+         * @param \App\Libs\ClearSettle\Resource\ApiClientManager $clients
+         * @param \App\Contracts\Repository\User    $userRepo  
          */
-        public function __construct(ApiClientManager $clients, $model, UserRepo $userRepo) 
-        {   
-            /**
-             * We dont need a hasher. We will send 
-             * user credantial via http post request to the api.
-             */
-            parent::__construct(null, $model);            
-            
+        public function __construct(ApiClientManager $clients, UserRepo $userRepo) 
+        {              
             $this->clientManager    = $clients;    
             
             $this->userRepo         = $userRepo;
