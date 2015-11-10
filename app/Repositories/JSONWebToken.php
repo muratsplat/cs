@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\User as Model;
 use InvalidArgumentException;
+use App\Contracts\Repository\JSONWebToken as IjwtRepo;
 use App\Contracts\Auth\ClearSettleAuthenticatable as AuthUser;
 
 /**
@@ -13,7 +13,7 @@ use App\Contracts\Auth\ClearSettleAuthenticatable as AuthUser;
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
-class JSONWebToken extends Cache
+class JSONWebToken extends Cache implements IjwtRepo
 {    
     
     /**

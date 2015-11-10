@@ -2,6 +2,8 @@
 
 namespace App\Contracts\Repository;
 
+use \App\Contracts\Auth\ClearSettleAuthenticatable as AuthUser;
+
 /**
  * Interface for JSONWebToken Repository 
  *
@@ -13,26 +15,26 @@ interface JSONWebToken
         /**
          * To bind jwt token value is
          * 
-         * @param \App\User $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @param string $jwtToken
          * @return void
          */
-        public function storeByUser(Model $user, $jwtToken=null);
+        public function storeByUser(AuthUser $user, $jwtToken=null);
         
         /**
          * To get jwt token by given User model
          * 
-         * @param \App\User $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @param mixed $default
          * @return mixed
          */
-        public function getByUser(Model $user, $default = null);
+        public function getByUser(AuthUser $user, $default = null);
         
         /**
          * Determine if given user's Jwt is stored.
          * 
-         * @param \App\User $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @return bool
          */
-        public function isStoredByUser(Model $user);
+        public function isStoredByUser(AuthUser $user);
 }

@@ -6,7 +6,7 @@ use App\Contracts\Repository\User           as UserRepo;
 use App\Services\ClearSettle\ApiLogin       as Login;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\UserProvider;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Contracts\Auth\ClearSettleAuthenticatable;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 use App\Exceptions\ClearSettle\InvalidCredentialsExc;
 
@@ -39,7 +39,7 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
      */
     protected $login;
     
-        /**
+         /**
          *  Create a new database and API mixed user provider.
          * 
          * @param \App\Libs\ClearSettle\Resource\ApiClientManager   $clients
@@ -65,14 +65,25 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
         {            
             $user       = $this->getUserByCredentials($credentials);
             
-            if ($this->login->login($user, $credentials)) {
+            if ($this->loginByApi($user, $credentials)) {
                 
                 return $user;
             }
-                               
+            
+            return null;
         }
         
-        protected function loginByApi()
+        /**
+         * To login given user by Clear Settle Login Service which incjected the app
+         * 
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
+         * @param array $credentials
+         * @return bool
+         */
+        protected function loginByApi(ClearSettleAuthenticatable $user, array $credentials)
+        {
+            return $this->login->login($user, $credentials);
+        }
         
         /**
          * To get User model by given credentials
@@ -93,8 +104,7 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
             }
             
             return $this->findOrCreateUserByEmail($email);           
-        }
-        
+        }        
 
         /**
          * Validate a user against the given credentials.
@@ -104,14 +114,8 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
          * @return bool
          */
         public function validateCredentials(Authenticatable $user, array $credentials) 
-        {
-            
-            return true;
-            //$this->verifyUserByClearSettle($credentials)
-            
-
-            
-            
+        {           
+            return $this->loginByApi($user, $credentials);            
         }
         
         /**

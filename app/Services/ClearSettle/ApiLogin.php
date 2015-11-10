@@ -3,7 +3,7 @@
 namespace App\Services\ClearSettle;
 
 use App\Contracts\Repository\JSONWebToken;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Contracts\Auth\ClearSettleAuthenticatable;
 use App\Libs\ClearSettle\Resource\Request\User  as UserRequest;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
@@ -42,17 +42,16 @@ class ApiLogin
         /**
          * To login Api Service
          * 
-         * @param \App\User $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @param array $credantials
          * @return bool
          */
-        public function login(Authenticatable $user, array $credantials)
+        public function login(ClearSettleAuthenticatable $user, array $credantials)
         {
             $request = $this->createNewUserRequest();            
             
             return $request->login($user, $credantials);     
-        }
-        
+        }       
         
         /**
          * To create new User Request

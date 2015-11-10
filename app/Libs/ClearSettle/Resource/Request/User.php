@@ -4,7 +4,6 @@ namespace App\Libs\ClearSettle\Resource\Request;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
-
 /**
  * User Requests
  * 
