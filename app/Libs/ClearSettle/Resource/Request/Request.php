@@ -2,8 +2,6 @@
 
 namespace App\Libs\ClearSettle\Resource\Request;
 
-
-use App\User                            as Model;
 use Exception;
 use RuntimeException;
 use GuzzleHttp\Client;

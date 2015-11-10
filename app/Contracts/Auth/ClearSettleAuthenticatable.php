@@ -2,6 +2,11 @@
 
 namespace App\Contracts\Auth;
 
+/**
+ * An Interface to login Clear Settle Api Service for user
+ * 
+ * @author Murat Ödünç <murat.asya@gmail.com>
+ */
 interface ClearSettleAuthenticatable
 {
     /**
@@ -9,8 +14,7 @@ interface ClearSettleAuthenticatable
      *
      * @return mixed
      */
-    public function getAuthIdentifier();
-    
+    public function getAuthIdentifier();    
     
     /**
      * Determine if the user is stored.
