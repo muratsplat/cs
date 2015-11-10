@@ -6,9 +6,9 @@ use Exception;
 use RuntimeException;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
-use App\Repositories\JSONWebToken       as JWTRepo;
 use Illuminate\Support\MessageBag;
-use Psr\Http\Message\ResponseInterface  as Response;
+use Psr\Http\Message\ResponseInterface              as Response;
+use App\Contracts\Repository\JSONWebToken           as JWTRepo;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -78,7 +78,7 @@ abstract class Request implements MessageProvider
     protected $log;
     
     /**
-     * @var \App\Repositories\JSONWebToken
+     * @var \App\Contracts\Repository\JSONWebToken
      */
     protected $jwtRepo;
     
@@ -99,7 +99,7 @@ abstract class Request implements MessageProvider
          * Create Instance
          * 
          * @param \GuzzleHttp\Client                $client
-         * @param \App\Repositories\JSONWebToken    $jwt
+         * @param \App\Contracts\Repository\JSONWebToken    $jwt
          */
         public function __construct(Client $client, JWTRepo $jwt) 
         {            
@@ -110,7 +110,18 @@ abstract class Request implements MessageProvider
             $this->log          = \App::make('log');
             
             $this->jwtRepo      = $jwt;
-        }        
+        }   
+        
+        
+        /**
+         * To create new instance
+         * 
+         * @return static
+         */
+        public function newRequest()
+        {
+            return new static($this->client, $this->jwtRepo);        
+        }
         
         /**
          * To get Message Bag
