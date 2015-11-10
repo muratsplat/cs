@@ -249,7 +249,7 @@ abstract class Request implements MessageProvider
          */
         protected function getBodyOnResponse()
         {
-            if ( $this->isReady() && $this->response->getBody())  {
+            if ( $this->isReady() && (boolean) $this->response->getBody())  {
                 
                    return $this->response->getBody();
             }
@@ -281,14 +281,16 @@ abstract class Request implements MessageProvider
         {
             $params = array_get($this->requests, $name, null);
             
-            if ( is_null($params) || count($params) !== 1 ) {
+            $httpVerb = ! is_null($params) ? key($params) : null;
+            
+            $path   = array_get($params, $httpVerb, null);
+            
+            if ( is_null($params) || count($params) !== 1 || is_null($path) ) {
                 
                 throw new InvalidArgumentException('Given request is not found or not valid, check the request list of the object!');          
-            }
+            }          
             
-            $httpVerb = head($params);
-            
-            return [$httpVerb, array_get($params, $httpVerb, null)];
+            return [$httpVerb, $path];
         }
         
         

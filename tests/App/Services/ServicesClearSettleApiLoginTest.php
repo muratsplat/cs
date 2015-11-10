@@ -66,7 +66,59 @@ class ServicesClearSettleApiLoginTest extends TestCase
         
         $loginService = new ApiLogin($jwtRepo, $userRequest);  
         
-        $this->assertFalse($loginService->login($user, $credentials));
-        
+        $this->assertFalse($loginService->login($user, $credentials));        
     }
+    
+    /**
+     * Functional Test
+     *
+     * @return void
+     */
+    public function testProviderTest()
+    {       
+        $loginService = \app('app.clearsettle.login');  
+        
+        $this->assertNotNull($loginService);
+    }
+    
+    /**
+     * Functional Test
+     *
+     * @return void
+     */
+    public function testLoginTryWithoutMockedObjectsUnsuccess()
+    {       
+        
+        $loginService = \app('app.clearsettle.login');          
+        
+        $wrongCredentials = ['email' => 'foo@bar.com', 'password' => 'secret'];   
+        
+        $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
+        
+        $this->assertFalse($loginService->login($user, $wrongCredentials));     
+    }
+    
+        
+    /**
+     * Functional Test
+     *
+     * @return void
+     */
+    public function testLoginTryWithoutMockedObjectsSuccess()
+    {     
+        
+        $loginService = \app('app.clearsettle.login');          
+        
+        $wrongCredentials = [
+                        'email'     => 'demo@bumin.com.tr',
+                        'password'  => 'cjaiU8CV',
+            ];
+        
+        $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
+        
+        $this->assertTrue($loginService->login($user, $wrongCredentials));     
+    }
+    
+   
+    
 }

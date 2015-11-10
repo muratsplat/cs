@@ -40,6 +40,8 @@ Class User  extends Request
         public function login(ClearSettleAuthenticatable $user, array $credentials)
         {                   
             $this->addOptionsAsParamsForLogin($credentials);
+            
+            var_dump($credentials);
             // sync request, not async !!!
             if ( $this->request('login')->isApproved() ) {
                 
@@ -49,6 +51,8 @@ Class User  extends Request
                 
                 return true;
             }   
+            
+             var_dump($this->getMessageBag());
          
             return false;
         }

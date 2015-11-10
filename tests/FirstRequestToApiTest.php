@@ -23,7 +23,7 @@ class ApiRequestTest extends TestCase
             // Base URI is used with relative requests
             'base_uri' => 'https://testreportingapi.clearsettle.com/api/v3/',
             // You can set any number of default request options.
-            'timeout'  => 4
+            'timeout'  => 6
            
         ]);        
     }
@@ -34,7 +34,7 @@ class ApiRequestTest extends TestCase
      *
      * @return void
      */
-    public function DIStestBasicExample()
+    public function testBasicExample()
     {      
         
         $response = $this->client->post(
