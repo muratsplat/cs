@@ -41,7 +41,7 @@ class ResourceRequestTest extends TestCase
      */
     public function testBasic()
     {           
-        $userM   = m::mock('App\Libs\ClearSettle\User');   
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');   
         // the example of login json response
         $responseBody = '{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
 iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVED"}';
@@ -54,7 +54,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);   
         
-        $fooRquest = new FooRequest($userM, $client);
+        $fooRquest = new FooRequest($client, $jwtRepo);
         
         $fooRquest->request('create', []);
         
@@ -73,7 +73,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
      */
     public function testStatusCode500Declined()
     {           
-        $userM   = m::mock('App\Libs\ClearSettle\User');   
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');    
         // the example of login sson response
         $responseBody = '{"message":"Bla blaa","status":"DECLINED"}';       
         
@@ -85,7 +85,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);   
         
-        $fooRquest = new FooRequest($userM, $client);     
+        $fooRquest = new FooRequest($client, $jwtRepo);     
             
         $fooRquest->request('create', []);
      
@@ -108,7 +108,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
      */
     public function testErrorException()
     {           
-        $userM   = m::mock('App\Libs\ClearSettle\User');   
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');        
             
            // the example of login sson response
         $responseBody = '{"message":"Bla blaa","status":"DECLINED"}';
@@ -123,7 +123,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);   
         
-        $fooRquest = new FooRequest($userM, $client);     
+        $fooRquest = new FooRequest($client, $jwtRepo);     
             
         $fooRquest->request('create', []);
      
@@ -166,10 +166,9 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $app = \app();
         
-        $app['log'] = $mockedLogger;
+        $app['log'] = $mockedLogger; 
         
-        
-        $userM   = m::mock('App\Libs\ClearSettle\User');               
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');        
            // the example of json response of a login
         $responseBody = '{"code":0,"status":"DECLINED","message":"Error: Merchant User Not Exists"}';        
         
@@ -181,7 +180,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);   
         
-        $fooRquest = new FooRequest($userM, $client);     
+        $fooRquest = new FooRequest($client, $jwtRepo);     
             
         $fooRquest->request('create', []);
      

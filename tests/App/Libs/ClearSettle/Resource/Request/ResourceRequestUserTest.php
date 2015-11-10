@@ -26,6 +26,23 @@ class ResourceRequestUserTest extends TestCase
      */
     protected $container;
     
+    /**
+     * @var string
+     */
+    protected $token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
+iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298";
+    
+    /**
+     * @var string
+     */
+    protected $successResponseBody = '{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
+iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVED"}';
+    
+    /**
+     * @var string
+     */
+    protected $unsuccessResponseBody = '{"code":0,"status":"DECLINED","message":"Error: Merchant User Not Exists"}';
+    
     
     public function setUp() {
         
@@ -44,39 +61,85 @@ class ResourceRequestUserTest extends TestCase
      *
      * @return void
      */
-    public function testBasicExample()
-    {           
-        $userM   = m::mock('App\Libs\ClearSettle\User');
+    public function testSimpleFirst()
+    {       
         
-        $userM->shouldReceive('getAuthEmail')->andReturn('foo@bar.com');
+        // mocking JSONWebToken Repository Instance
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');           
+        $jwtRepo->shouldReceive('storeByUser')->times(1)->andReturnNull();
         
-        $userM->shouldReceive('getAuthPassword')->andReturn('secret');
-        
-        $responseBody = '{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
-iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVED"}';
         // Create a mock and queue one response.
         $mock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], $responseBody),      
+            new Response(200, ['X-Foo' => 'Bar'], $this->successResponseBody),      
         ]);
         
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);     
                 
-        $userRequest = new User($userM, $client);       
+        $userRequest = new User($client, $jwtRepo);       
         
-        $params  = $userRequest->getRequestParams('login');
+        $credentials = ['email' => 'foo@bar.com', 'password' => 'secret'];
+  
+        // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->exists = true;        
+        $userModel->id = 1;
         
-        $this->assertEquals(['POST' => '/merchant/user/login'], $params);
+        $jsonReponse = $userRequest->login($userModel, $credentials);
         
-        $jsonReponse = $userRequest->login();
-        
-        $this->assertNotNull($jsonReponse);
+        $this->assertTrue($jsonReponse);
         
         $this->assertTrue($userRequest->isReady());
         $this->assertTrue($userRequest->isApproved());
         
         $this->assertTrue($userRequest->isJSON());        
-        $this->assertTrue($userRequest->isSuccess());     
+        $this->assertTrue($userRequest->isSuccess());             
+    }   
+    
+      
+    /**
+     * A basic unit test
+     *
+     * @return void
+     */
+    public function testClientOptions()
+    {       
+
+        // mocking JSONWebToken Repository Instance
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');           
+        $jwtRepo->shouldReceive('storeByUser')->times(1)->andReturnNull();          
+        $jwtRepo->shouldReceive('isStoredByUser')->times(1)->andReturn(true);
+        $jwtRepo->shouldReceive('getByUser')->times(2)->andReturn($this->token);
+        
+        
+        // Create a mock and queue one response.
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], $this->successResponseBody),      
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);     
+                
+        $userRequest = new User($client, $jwtRepo);       
+        
+        $credentials = ['email' => 'foo@bar.com', 'password' => 'secret'];
+  
+        // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->exists = true;        
+        $userModel->id = 1;
+        
+        $jsonReponse = $userRequest->login($userModel, $credentials);
+        
+        $this->assertTrue($jsonReponse);
+        
+        $this->assertEquals($this->token, $userRequest->getUserJWT());
+        
+        $shouldbeOptions = ['form_params' => $credentials, 'headers' => ['Authorization' => $this->token]];
+        
+        $this->assertEquals($shouldbeOptions, $userRequest->getClientOptions());
     }
     
     /**
@@ -86,37 +149,39 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
      */
     public function testWrongCredentials()
     {           
-        $userM   = m::mock('App\Libs\ClearSettle\User');
-        
-        $userM->shouldReceive('getAuthEmail')->andReturn('foo@bar.com');
-        
-        $userM->shouldReceive('getAuthPassword')->andReturn('secret');
-        
-        $responseBody = '{"code":0,"status":"DECLINED","message":"Error: Merchant User Not Exists"}';
-        
+        // mocking JSONWebToken Repository Instance
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');           
+        $jwtRepo->shouldReceive('storeByUser')->times(0)->andReturnNull();          
+        $jwtRepo->shouldReceive('isStoredByUser')->times(0)->andReturn(false);
+        $jwtRepo->shouldReceive('getByUser')->times(0)->andReturn($this->token);
+                
         // Create a mock and queue one response.
         $mock = new MockHandler([
-            new Response(401, ['X-Foo' => 'Bar'], $responseBody),      
+            new Response(401, ['X-Foo' => 'Bar'], $this->unsuccessResponseBody),      
         ]);
         
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);     
                 
-        $userRequest = new User($userM, $client);       
         
-        $params  = $userRequest->getRequestParams('login');
+        // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->exists = true;        
+        $userModel->id = 1;
         
-        $this->assertEquals(['POST' => '/merchant/user/login'], $params);
+        $userRequest = new User($client, $jwtRepo);       
         
-        $jsonReponse = $userRequest->login();
+        $credentials = ['email' => 'foo@bar.com', 'password' => 'secret'];
         
-        $this->assertNotNull($jsonReponse);
+        $result = $userRequest->login($userModel, $credentials);
+        
+        $this->assertFalse($result);
         
         $this->assertTrue($userRequest->isReady());
         $this->assertFalse($userRequest->isApproved());
         
         $this->assertTrue($userRequest->isJSON());        
         $this->assertFalse($userRequest->isSuccess());     
-    } 
-   
+    }   
 }

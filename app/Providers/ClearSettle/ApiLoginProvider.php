@@ -2,10 +2,9 @@
 
 namespace App\Providers\ClearSettle;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Repositories\User;
+use App\Libs\ClearSettle\Resource\Request\User  as UserRequest;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
-use App\Exceptions\ClearSettle\InvalidCredentialsExc;
-
 
 /**
  * Clear Settle Api Login Service
@@ -16,21 +15,27 @@ class ApiLoginProvider
 {    
     
     /**
-     * @var  App\Libs\ClearSettle\Resource\ApiClientManager
+     * @var \App\Libs\ClearSettle\Resource\ApiClientManager
      */
     protected $clientManager;
     
+    /**
+     *
+     * @var \App\Repositories\User 
+     */
+    protected $repo;    
     
         /**
-         *  Create a new database and API mixed user provider.
+         *  Create a new Clear Settle Login Service
          * 
          * @param ApiClientManager $clients
-         * @param string    $model  
-         * $param
+         * @param \App\Repositories\User    $repo
          */
-        public function __construct(ApiClientManager $clients) 
+        public function __construct(ApiClientManager $clients, User $repo) 
         {   
-            $this->clientManager    = $clients;    
+            $this->clientManager    = $clients;   
+            
+            $this->repo             = $repo;
         }  
         
         /**
@@ -44,5 +49,30 @@ class ApiLoginProvider
         {
             return $this->userRepo->findOrCreateByEmail($email);
         }
+        
+        public function validateCredentials(array $credantials)
+        {
+            
+            
+        }
+        
+        
+        protected function createUserRequest()
+        {
+            return new UserRequest($user, $client);
+        }
+        
+        /**
+         * Create pre-configured http client for Clear Settle Api request
+         * 
+         * @return \GuzzleHttp\Client
+         */
+        protected function createApiClient()
+        {
+            return $this->clientManager->newClient();
+        }
+        
+        
+        
     
 }

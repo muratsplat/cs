@@ -3,7 +3,7 @@
 namespace App\Contracts\Repository;
 
 /**
- * Interface for User Repository 
+ * Interface for JSONWebToken Repository 
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
@@ -29,7 +29,7 @@ interface JSONWebToken
         public function getByUser(Model $user, $default = null);
         
         /**
-         * Determine if Jwt is stored.
+         * Determine if given user's Jwt is stored.
          * 
          * @param \App\User $user
          * @return bool

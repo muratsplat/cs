@@ -2,15 +2,18 @@
 
 namespace App\Libs\ClearSettle\Resource\Request;
 
+use App\User as Model;
+
 /**
- * Login Request
+ * User Requests
+ * 
  * 
  * This class to sends  login request Clear Settle Api..
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
 Class User  extends Request
-{   
+{    
     
     /**
      * Requets
@@ -18,10 +21,10 @@ Class User  extends Request
      * @var array
      */
     protected $requests = [
-      //method              http verb   route
+        
         'login'         =>  ['POST' => '/merchant/user/login'],
-        'get'           =>  ['POST' => '/merchant/user/get'],
         'info'          =>  ['POST' => '/merchant/user/info'],
+        'create'        =>  ['POST' => '/merchant/user/create'],
         'update'        =>  ['POST' => '/merchant/user/update'],       
         'show'          =>  ['POST' => '/merchant/user/show'],
         'changePassword'=>  ['POST' => '/merchant/user/changePassword'],        
@@ -30,27 +33,24 @@ Class User  extends Request
         /**
          * To send login request using injected User Object
          * 
-         * @return stdClass|null
+         * @param array $user
+         * @param array $credentials
+         * @return bool
          */
-        public function login(array $credentials)
+        public function login(Model $user, array $credentials)
         {                   
-            $options    = $this->getFormParamsForLogin($credentials);
+            $this->addOptionsAsParamsForLogin($credentials);
             // sync request, not async !!!
-            if ( $this->request('login', $options)->isApproved() ) {
+            if ( $this->request('login')->isApproved() ) {
+                
+                $this->setUser($user);
 
-                $res =  $this->convertResponseBodyToJSON();
+                $this->storeNewJWTokenOnUser();
                 
-                $this->setJWTTokenOnUser($res);
-                
-                return $res;
+                return true;
             }   
-
-            if ( $this->isReady() && $this->isJSON() ) {
-
-                return $this->convertResponseBodyToJSON();                                    
-            }               
          
-            return null;
+            return false;
         }
         
         
@@ -59,31 +59,15 @@ Class User  extends Request
          * 
          * @return array        ['email' => value, 'password' => value]
          */
-        private function getFormParamsForLogin(array $credentials)
+        private function addOptionsAsParamsForLogin(array $credentials)
         {                        
             // References: http://docs.guzzlephp.org/en/latest/request-options.html#form-params
-            return [
-                        'form_params' =>
-                            
-                            [
-                                'email'     => array_get($credentials, 'email', null),
-                                'password'  => array_get($credentials, 'password', null),
-                            ]
-                
-                    ];           
-        }
-        
-        
-        /**
-         * To set JWT token on user by given decoded json reponse
-         * 
-         * @param \stdClass $jsonObject
-         */
-        protected function setJWTTokenOnUser(\stdClass $jsonObject)
-        {
-            if ( isset($jsonObject->token) ) {
-                
-                $this->user->setJWTToken($jsonObject->token);
-            }            
-        }
+            $params =[
+                        'email'     => array_get($credentials, 'email', null),
+                        'password'  => array_get($credentials, 'password', null),
+                    ];        
+            
+            $this->putOptions('form_params', $params);
+        }        
+
 }

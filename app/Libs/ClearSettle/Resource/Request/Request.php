@@ -2,11 +2,13 @@
 
 namespace App\Libs\ClearSettle\Resource\Request;
 
+
+use App\User                            as Model;
 use Exception;
 use RuntimeException;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
-use App\Libs\ClearSettle\User;
+use App\Repositories\JSONWebToken       as JWTRepo;
 use Illuminate\Support\MessageBag;
 use Psr\Http\Message\ResponseInterface  as Response;
 use GuzzleHttp\Exception\ServerException;
@@ -17,6 +19,8 @@ use GuzzleHttp\Exception\TransferException;
 //use GuzzleHttp\Exception\BadResponseException;
 //use Psr\Http\Message\StreamInterface    as Stream;
 use Illuminate\Contracts\Support\MessageProvider;
+use App\Exceptions\ClearSettle\JWTokenNotStoredExc;
+use App\Exceptions\ClearSettle\JWTokenNotDecodedExc;
 
 /**
  * Abstract Request
@@ -27,12 +31,6 @@ use Illuminate\Contracts\Support\MessageProvider;
  */
 abstract class Request implements MessageProvider
 {   
-    
-    /**
-     * User Attributes
-     * @var \App\Libs\ClearSettle\User
-     */
-    protected $user;
     
     /**
      * Guzzle Http Pre-Configured Client
@@ -79,24 +77,41 @@ abstract class Request implements MessageProvider
      * @var \Illuminate\Contracts\Logging\Log
      */
     protected $log;
+    
+    /**
+     * @var \App\Repositories\JSONWebToken
+     */
+    protected $jwtRepo;
+    
+    /**
+     * @var \App\User 
+     */
+    protected $user;
+      
+    /**
+     * Guzzle Client Options
+     * http://docs.guzzlephp.org/en/latest/request-options.html
+     *
+     * @var array 
+     */
+    protected $options = [];
 
         /**
          * Create Instance
          * 
-         * @param \App\Libs\ClearSettle\User    $user
-         * @param G\uzzleHttp\Client            $client
+         * @param \GuzzleHttp\Client                $client
+         * @param \App\Repositories\JSONWebToken    $jwt
          */
-        public function __construct(User $user, Client $client) 
-        {
-            $this->user         = $user;
-            
+        public function __construct(Client $client, JWTRepo $jwt) 
+        {            
             $this->client       = $client;
             
             $this->messageBag   = new MessageBag();
             
             $this->log          = \App::make('log');
-        }
-        
+            
+            $this->jwtRepo      = $jwt;
+        }        
         
         /**
          * To get Message Bag
@@ -106,42 +121,40 @@ abstract class Request implements MessageProvider
         public function getMessageBag() 
         {            
             return $this->messageBag;            
-        }   
-        
+        }           
         
         /**
          * To send http request to Clear Settle Api
          * 
          * @param string $method    method name 
-         * @param strig $url        /merchent/user
-         * @param array $options
          * @return self 
          */
-        public function request($method, array $options) 
-        {            
-            $params     = $this->getRequestParams($method);
+        public function request($method) 
+        {                        
+            list($httpVerb, $route) = $this->getRequestParams($method);
             
-            $httpVerb   = key($params);
-            
-            $url        = array_get($params, $httpVerb);
-                       
-            /**
-             * Clear Settle Api http status code is unexpected.
-             * User login is not success, Response status code returns 500.
-             * 
-             * In normal scenario, the status code should be like 401.
-             * 
-             * Look at : https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error
-             * 
-             * TODO:
-             * The api should harmonize W3W standarts.  
-             * If this point of the api is fixed, all try block can  be deleted..
-             */
+            $options    = $this->getClientOptions();
+                                   
             try {
                 
-                $response   = $this->client->request($httpVerb, $url, $options);
+                $response   = $this->client->request($httpVerb, $route, $options);
                 
             } catch (ServerException $exc) {
+                
+                /**
+                * When it ties to login with invalid credentials,
+                * Clear Settle Api returns unexpected http status code.
+                 * 
+                * User login is not success, Response status code returns 500.
+                * 
+                * In normal scenario, the status code should be like 401.
+                * 
+                * Look at : https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error
+                * 
+                * TODO:
+                * The api should harmonize W3W standarts.  
+                * If this point of the api is fixed, the catch block can  be deleted..
+                */
                                                              
                 $response = $exc->getResponse();
                 
@@ -238,13 +251,13 @@ abstract class Request implements MessageProvider
         }
         
         /**
-         * To get params by given action to request 
+         * To get params by given action for new http request 
          * 
-         * @param type $name
+         * @param string    $name
          * @return array    [http_verb, route]
          * @throws \InvalidArgumentException
          */
-        public function getRequestParams($name)
+        protected function getRequestParams($name)
         {
             $params = array_get($this->requests, $name, null);
             
@@ -253,7 +266,9 @@ abstract class Request implements MessageProvider
                 throw new InvalidArgumentException('Given request is not found or not valid, check the request list of the object!');          
             }
             
-            return $params;
+            $httpVerb = head($params);
+            
+            return [$httpVerb, array_get($params, $httpVerb, null)];
         }
         
         
@@ -367,5 +382,170 @@ abstract class Request implements MessageProvider
                 
             $this->log->{$type}('The request is unsuccess !', $message);
         }
-             
+        
+        /**
+         * To set user model
+         * 
+         * @param \App\User  $user
+         */
+        public function setUser(Model $user)
+        {
+            if (! $user->exists ) {
+                
+                throw new InvalidArgumentException("Given user model is not saved. Firstly try to store the model on db !");
+            }
+            
+            $this->user = $user;
+            
+        }
+        
+        /**
+         * To get user model
+         * 
+         * @return \App\User
+         */
+        public function getUser()
+        {
+            return $this->user;
+        }
+        
+        /**
+         * To update JWT token for user
+         * 
+         * @param bool
+         */
+        public function storeNewJWTokenOnUser()
+        {
+            $token = $this->getJWTokenInResponse();            
+            
+            switch (true) {
+                
+                case is_null($token):
+                    
+                    throw new JWTokenNotDecodedExc('JWT is not saved! JSON Web Token is not parsed in the json response. '
+                            . 'Clear Settle Api maybe has been returned unknown reponse body. ');
+                
+                case ! $this->userReady():
+                    
+                    throw new JWTokenNotStoredExc('JWT is not saved! Firstly user should had stored. ');
+                
+                default :
+                    
+                    $this->jwtRepo->storeByUser($this->user, $token);
+                    
+                    return true;
+            }
+            
+        }
+        
+        /**
+         * Determine if the user is setted and stored on db
+         * for api requests
+         * 
+         * @return bool
+         */
+        public function userReady()
+        {            
+            return ! is_null($this->user) && $this->user->exists;           
+        }
+        
+        /**
+         * To get JWT token in json reponse if response body is getted..
+         * 
+         * @return string|null
+         */
+        protected function getJWTokenInResponse()
+        {            
+            //            '{
+            //                "token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9s
+            //                ZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
+            //                iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298",
+            //                
+            //                "status":"APPROVED"
+            //            }'
+            $stdObject = $this->convertResponseBodyToJSON();
+            
+            return isset($stdObject->token) ? $stdObject->token : null;        
+        }
+        
+        /**
+         * Determine if user has a jtw token
+         * 
+         * @return bool
+         */
+        public function userHasJWT()
+        {
+            if ( ! $this->userReady() ) { return false; }
+            
+            $user = $this->getUser();
+            
+            return $this->jwtRepo->isStoredByUser($user);          
+        }
+        
+        /**
+         * To get JWT token if it is exist
+         * 
+         * @return string|null 
+         */
+        public function getUserJWT()
+        {
+            if ($this->userReady()) { 
+                
+                $user = $this->getUser(); 
+                
+                return $this->jwtRepo->getByUser($user, 'null');                
+            }       
+        }        
+        
+        /**
+         * To get client options
+         * 
+         * @param array $options
+         * @return array
+         */
+        public function getClientOptions()
+        {            
+            if ( $this->userHasJWT() ) {
+                
+               $headers = ['Authorization' => $this->getUserJWT()];
+               
+               $this->putHeaders($headers);                
+            }                   
+            return $this->options;
+        }
+        
+        
+        /**
+         * Add new options for http clients
+         * 
+         * @param string $key
+         * @param mixed|Closure $value
+         */
+        public function putOptions($key, $value) 
+        {
+            $this->options[(string)$key] = value($value);            
+        }
+        
+        /**
+         * To put form parameter to options
+         * 
+         * @param array $parameters
+         * @return void
+         */
+        public function putParams(array $parameters)
+        {
+            $this->putOptions('form_params', $parameters);
+        }
+        
+        /**
+         * Add header to each request
+         * 
+         * @param array $headers
+         * @return void
+         */
+        public function putHeaders(array $headers)
+        {
+            $this->putOptions('headers', $headers);
+        }
+                            
 }
