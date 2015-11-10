@@ -40,9 +40,11 @@ class ServicesClearSettleApiLoginTest extends TestCase
         
         $user   = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
         
+        $userRequest = m::mock('App\Libs\ClearSettle\Resource\Request\User');
+        
         $credentials = ['email' => 'foo@bar.com', 'password' => 'secret'];
         
-        $loginService = new ApiLogin($clients, $jwtRepo);  
+        $loginService = new ApiLogin($clients, $jwtRepo, $userRequest);  
         
         $this->assertTrue($loginService->login($user, $credentials));
         
