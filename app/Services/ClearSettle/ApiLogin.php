@@ -5,7 +5,6 @@ namespace App\Services\ClearSettle;
 use App\Contracts\Repository\JSONWebToken;
 use App\Contracts\Auth\ClearSettleAuthenticatable;
 use App\Libs\ClearSettle\Resource\Request\User  as UserRequest;
-use App\Libs\ClearSettle\Resource\ApiClientManager;
 
 /**
  * Clear Settle Api Login Service
@@ -14,12 +13,7 @@ use App\Libs\ClearSettle\Resource\ApiClientManager;
  */
 class ApiLogin
 {    
-    
-    /**
-     * @var \App\Libs\ClearSettle\Resource\ApiClientManager
-     */
-    protected $clientManager;
-    
+      
     /**
      * @var \App\Contracts\Repository\JSONWebToken
      */
@@ -32,15 +26,12 @@ class ApiLogin
 
         /**
          *  Create new Clear Settle Login Service
-         * 
-         * @param \App\Libs\ClearSettle\Resource\ApiClientManager   $clients
+         *         
          * @param \App\Contracts\Repository\JSONWebToken            $jwtRepo
          * @param \\App\Libs\ClearSettle\Resource\Request\Use       $userRequest
          */
-        public function __construct(ApiClientManager $clients, JSONWebToken $jwtRepo, UserRequest $userRequest) 
-        {   
-            $this->clientManager    = $clients;   
-            
+        public function __construct(JSONWebToken $jwtRepo, UserRequest $userRequest) 
+        {               
             $this->jwtRepo          = $jwtRepo;
             
             $this->userRequest      = $userRequest;           
@@ -68,16 +59,5 @@ class ApiLogin
         protected function userRequest()
         {
             return $this->userRequest;
-        }
-        
-        /**
-         * Create pre-configured http client for Clear Settle Api request
-         * 
-         * @return \GuzzleHttp\Client
-         */
-        protected function createApiClient()
-        {
-            return $this->clientManager->newClient();
-        }        
-    
+        }  
 }

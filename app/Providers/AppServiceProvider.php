@@ -68,7 +68,7 @@ class AppServiceProvider extends ServiceProvider
         
             $userRequest = User::create($clientManager->newClient(), $jwtRepo);
         
-            return new ApiLogin($clientManager, $jwtRepo, $userRequest);    
+            return new ApiLogin($jwtRepo, $userRequest);    
         });
     }
 

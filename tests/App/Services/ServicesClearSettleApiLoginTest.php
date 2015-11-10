@@ -16,13 +16,12 @@ class ServicesClearSettleApiLoginTest extends TestCase
      * @return void
      */
     public function testBasic()
-    {
-        $clients = m::mock('App\Libs\ClearSettle\Resource\ApiClientManager');        
+    {        
         $jwtRepo = m::mock('App\Contracts\Repository\JSONWebToken');
         
         $userRequest = m::mock('App\Libs\ClearSettle\Resource\Request\User');
         
-        $login = new ApiLogin($clients, $jwtRepo, $userRequest);  
+        $login = new ApiLogin($jwtRepo, $userRequest);  
     }
     
     /**
@@ -31,12 +30,8 @@ class ServicesClearSettleApiLoginTest extends TestCase
      * @return void
      */
     public function testLogin()
-    {
-        $clients = m::mock('App\Libs\ClearSettle\Resource\ApiClientManager');  
-        
-        $guzzleClient = m::mock('GuzzleHttp\Client');
-        
-        $clients->shouldReceive('newClient')->times(1)->andReturn($guzzleClient);
+    {       
+        $credentials = ['email' => 'foo@bar.com', 'password' => 'secret'];        
         
         $jwtRepo = m::mock('App\Contracts\Repository\JSONWebToken');
         
@@ -44,9 +39,11 @@ class ServicesClearSettleApiLoginTest extends TestCase
         
         $userRequest = m::mock('App\Libs\ClearSettle\Resource\Request\User');
         
-        $credentials = ['email' => 'foo@bar.com', 'password' => 'secret'];
+        $userRequest->shouldReceive('login')->times(1)->with($user, $credentials)->andReturn(true);
         
-        $loginService = new ApiLogin($clients, $jwtRepo, $userRequest);  
+        
+        
+        $loginService = new ApiLogin($jwtRepo, $userRequest);  
         
         $this->assertTrue($loginService->login($user, $credentials));
         
