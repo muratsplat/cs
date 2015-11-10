@@ -22,12 +22,12 @@ Class User  extends Request
      */
     protected $requests = [
         
-        'login'         =>  ['POST' => '/merchant/user/login'],
-        'info'          =>  ['POST' => '/merchant/user/info'],
-        'create'        =>  ['POST' => '/merchant/user/create'],
-        'update'        =>  ['POST' => '/merchant/user/update'],       
-        'show'          =>  ['POST' => '/merchant/user/show'],
-        'changePassword'=>  ['POST' => '/merchant/user/changePassword'],        
+        'login'         =>  ['POST' => 'merchant/user/login'],
+        'info'          =>  ['POST' => 'merchant/user/info'],
+        'create'        =>  ['POST' => 'merchant/user/create'],
+        'update'        =>  ['POST' => 'merchant/user/update'],       
+        'show'          =>  ['POST' => 'merchant/user/show'],
+        'changePassword'=>  ['POST' => 'merchant/user/changePassword'],        
     ];    
 
         /**
@@ -41,7 +41,6 @@ Class User  extends Request
         {                   
             $this->addOptionsAsParamsForLogin($credentials);
             
-            var_dump($credentials);
             // sync request, not async !!!
             if ( $this->request('login')->isApproved() ) {
                 
@@ -50,10 +49,7 @@ Class User  extends Request
                 $this->storeNewJWTokenOnUser();
                 
                 return true;
-            }   
-            
-             var_dump($this->getMessageBag());
-         
+            }         
             return false;
         }
         

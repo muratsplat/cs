@@ -32,7 +32,7 @@ class AuthServiceProvider extends ServiceProvider
         
         $loginService   = $this->app->make('app.clearsettle.login');       
 
-        \Auth::extend('ClearSettleApi', function($app) use ($userRepo, $loginService) {
+        \Auth::extend('clearSettleApi', function($app) use ($userRepo, $loginService) {
             
             return new ApiUserProvider($app['app.clearsettle.clients'], $userRepo,$loginService);
         });

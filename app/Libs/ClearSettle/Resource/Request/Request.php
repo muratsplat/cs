@@ -156,7 +156,7 @@ abstract class Request implements MessageProvider
             $options    = $this->getClientOptions();
                                    
             try {
-                
+                                
                 $response   = $this->client->request($httpVerb, $route, $options);
                 
             } catch (ServerException $exc) {
@@ -570,6 +570,28 @@ abstract class Request implements MessageProvider
         public function putHeaders(array $headers)
         {
             $this->putOptions('headers', $headers);
+        }
+        
+        /**
+         * Determine if object has errors
+         * 
+         * @return boolean
+         */
+        public function hasError()
+        {            
+            $errors = $this->getMessageBag();
+            
+            return ! $errors->isEmpty();
+        }
+        
+        /**
+         * To get error 
+         * 
+         * @return array
+         */
+        public function getErrors()
+        {
+            return $this->getMessageBag()->getMessages();
         }
                             
 }

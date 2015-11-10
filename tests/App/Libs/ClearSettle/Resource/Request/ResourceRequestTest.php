@@ -56,7 +56,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $fooRquest = new FooRequest($client, $jwtRepo);
         
-        $fooRquest->request('create', []);
+        $fooRquest->request('login', []);
         
         $this->assertTrue($fooRquest->isReady());
         
@@ -87,7 +87,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $fooRquest = new FooRequest($client, $jwtRepo);     
             
-        $fooRquest->request('create', []);
+        $fooRquest->request('login', []);
      
         $this->assertTrue($fooRquest->isReady());
         
@@ -125,7 +125,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $fooRquest = new FooRequest($client, $jwtRepo);     
             
-        $fooRquest->request('create', []);
+        $fooRquest->request('login', []);
      
         $this->assertTrue($fooRquest->isReady());
         
@@ -139,7 +139,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $this->assertTrue($fooRquest->getMessageBag()->isEmpty());
         // adding an error for throwing "RequestException"
-        $fooRquest->request('create', []);
+        $fooRquest->request('login', []);
         
         $this->assertFalse($fooRquest->getMessageBag()->isEmpty());        
        
@@ -182,7 +182,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $fooRquest = new FooRequest($client, $jwtRepo);     
             
-        $fooRquest->request('create', []);
+        $fooRquest->request('login', []);
      
         $this->assertTrue($fooRquest->isReady());
         
@@ -198,6 +198,31 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $this->assertTrue($fooRquest->getMessageBag()->has('client_error'));      
     }   
+    
+    
+    /**
+     * This test methods sends real http request remote server !!!!
+     */
+    public function disable_testWithoutMockedObjects() 
+    {
+        $client = \app('app.clearsettle.clients')->newClient();
+        
+        $jwtRepo= \app('App\Contracts\Repository\JSONWebToken');
+        
+        $fooRquest = new FooRequest($client, $jwtRepo);
+       
+        $credentials = [
+            'email'     => 'demo@bumin.com.tr',
+            'password'  => 'cjaiU8CV',
+        ];
+        
+           
+        $fooRquest->putOptions('form_params', $credentials);
+        
+        $this->assertTrue($fooRquest->request('login')->isApproved());       
+       
+        
+    }
    
 }
 
@@ -211,7 +236,7 @@ class FooRequest extends Request {
     
     protected $requests = [
       //method              http verb   route
-        'create'         =>  ['POST' => '/merchant/user/login'],
+        'login'         =>  ['POST' => 'merchant/user/login'],
           
     ]; 
     

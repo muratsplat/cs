@@ -21,15 +21,15 @@ return [
     'apis' => [
         
         'live'  => [
-                'baseUrl'   => 'https://livereportingapi.clearsettle.com/api/v3',
+                'base_uri'   => 'https://livereportingapi.clearsettle.com/api/v3/',
                 'verify'    => true, // enable ssl
-                'timeout'   => 3,
+                'timeout'   => 10,
             ],
         
         'test'  => [
-                'baseUrl'   => 'https://testreportingapi.clearsettle.com/api/v3',
+                'base_uri'   => 'https://testreportingapi.clearsettle.com/api/v3/',
                 'verify'    => true,
-                'timeout'   => 2,
+                'timeout'   => 10,
             
             ],
     ], 

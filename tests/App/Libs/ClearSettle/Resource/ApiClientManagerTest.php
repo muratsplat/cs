@@ -87,5 +87,35 @@ class ApiClientManagerTest extends TestCase
         
         $this->assertNotNull($manager);    
     }
+    
+        
+    /**
+     * Functional test
+     * 
+     * @test
+     */
+    public function testWithRealObjectInIOC() 
+    {
+        $manager = \app('app.clearsettle.clients');
+        
+        $client = $manager->newClient();    
+            
+        $response = $client->post(
+                'merchant/user/login', 
+                [
+                    'verify'        => true,
+                    'form_params'   => [
+                        
+                        'email'     => 'demo@bumin.com.tr',
+                        'password'  => 'cjaiU8CV'
+                    ],
+                
+                ]
+                
+                );  
+        
+        $this->assertEquals( 200, $response->getStatusCode() );        
+            
+    }
 
 }

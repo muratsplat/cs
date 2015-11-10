@@ -58,7 +58,7 @@ class ApiClientManager {
             $name       = $this->getApiName();
                 
             $options    = $this->getOptions($name);
-            
+           
             return new Client($options);
         }
         

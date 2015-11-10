@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\UserProvider;
 use App\Contracts\Auth\ClearSettleAuthenticatable;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 use App\Exceptions\ClearSettle\InvalidCredentialsExc;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 
 /**
@@ -64,11 +65,13 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
         public function retrieveByCredentials(array $credentials) 
         {            
             $user       = $this->getUserByCredentials($credentials);
-            
+           
             if ($this->loginByApi($user, $credentials)) {
                 
                 return $user;
             }
+            
+           
             
             return null;
         }
