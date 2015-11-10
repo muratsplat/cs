@@ -117,6 +117,16 @@ abstract class Request implements MessageProvider
          * To create new instance
          * 
          * @return static
+         */       
+        public static function create(Client $client, JWTRepo $jwt)
+        {
+            return new static($client, $jwt);        
+        }
+        
+        /**
+         * To create new instance
+         * 
+         * @return static
          */
         public function newRequest()
         {

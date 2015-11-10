@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\ClearSettle\ApiLogin;
 use Illuminate\Support\ServiceProvider;
+use App\Libs\ClearSettle\Resource\Request\User;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
 class AppServiceProvider extends ServiceProvider
@@ -58,12 +59,17 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     protected function registerClearSettleApiLogin()
-    {        
-        $this->app->singleton('app.clearsettle.login', function($app) {            
-            
+    {                
+        $this->app->singleton('app.clearsettle.login', function($app) {                     
+        
             $jwtRepo = $app->make('App\Contracts\Repository\JSONWebToken');
-            
-            return new ApiLogin($app['app.clearsettle.clients'], $jwtRepo);    
+        
+            $clientManager = $app->make('app.clearsettle.clients');
+        
+            $userRequest = User::create($clientManager->newClient(), $jwtRepo);
+        
+            return new ApiLogin($clientManager, $jwtRepo, $userRequest);    
         });
     }
+
 }

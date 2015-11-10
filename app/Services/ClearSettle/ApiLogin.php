@@ -25,18 +25,25 @@ class ApiLogin
      */
     protected $jwtRepo;
     
+    /**
+     * @var \App\Libs\ClearSettle\Resource\Request\Use 
+     */
+    protected $userRequest;    
 
         /**
          *  Create new Clear Settle Login Service
          * 
          * @param \App\Libs\ClearSettle\Resource\ApiClientManager   $clients
          * @param \App\Contracts\Repository\JSONWebToken            $jwtRepo
+         * @param \\App\Libs\ClearSettle\Resource\Request\Use       $userRequest
          */
-        public function __construct(ApiClientManager $clients, JSONWebToken $jwtRepo ) 
+        public function __construct(ApiClientManager $clients, JSONWebToken $jwtRepo, UserRequest $userRequest) 
         {   
             $this->clientManager    = $clients;   
             
             $this->jwtRepo          = $jwtRepo;
+            
+            $this->userRequest      = $userRequest;           
         }  
        
         /**
@@ -48,7 +55,7 @@ class ApiLogin
          */
         public function login(ClearSettleAuthenticatable $user, array $credantials)
         {
-            $request = $this->createNewUserRequest();            
+            $request = $this->userRequest();            
             
             return $request->login($user, $credantials);     
         }       
@@ -58,13 +65,9 @@ class ApiLogin
          * 
          * @return \App\Libs\ClearSettle\Resource\Request\User
          */
-        protected function createNewUserRequest()
+        protected function userRequest()
         {
-            $client = $this->createApiClient();
-            
-            $jwt    = $this->jwtRepo;
-            
-            return new UserRequest($client, $jwt);
+            return $this->userRequest;
         }
         
         /**

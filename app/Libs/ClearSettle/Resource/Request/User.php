@@ -2,7 +2,7 @@
 
 namespace App\Libs\ClearSettle\Resource\Request;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Contracts\Auth\ClearSettleAuthenticatable;
 
 /**
  * User Requests
@@ -33,11 +33,11 @@ Class User  extends Request
         /**
          * To send login request using given user model
          * 
-         * @param \Illuminate\Contracts\Auth\Authenticatable $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable; $user
          * @param array $credentials
          * @return bool
          */
-        public function login(Authenticatable $user, array $credentials)
+        public function login(ClearSettleAuthenticatable $user, array $credentials)
         {                   
             $this->addOptionsAsParamsForLogin($credentials);
             // sync request, not async !!!
