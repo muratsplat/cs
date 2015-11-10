@@ -19,6 +19,7 @@ use GuzzleHttp\Exception\TransferException;
 //use GuzzleHttp\Exception\BadResponseException;
 //use Psr\Http\Message\StreamInterface    as Stream;
 use Illuminate\Contracts\Support\MessageProvider;
+use App\Contracts\Auth\ClearSettleAuthenticatable as AuthUser;
 use App\Exceptions\ClearSettle\JWTokenNotStoredExc;
 use App\Exceptions\ClearSettle\JWTokenNotDecodedExc;
 
@@ -388,9 +389,9 @@ abstract class Request implements MessageProvider
          * 
          * @param \App\User  $user
          */
-        public function setUser(Model $user)
+        public function setUser(AuthUser $user)
         {
-            if (! $user->exists ) {
+            if (! $user->getAuthIsExist() ) {
                 
                 throw new InvalidArgumentException("Given user model is not saved. Firstly try to store the model on db !");
             }
@@ -402,7 +403,7 @@ abstract class Request implements MessageProvider
         /**
          * To get user model
          * 
-         * @return \App\User
+         * @return \App\Contracts\Auth\ClearSettleAuthenticatable
          */
         public function getUser()
         {

@@ -2,8 +2,8 @@
 
 namespace App\Services\ClearSettle;
 
-use App\User;
 use App\Contracts\Repository\JSONWebToken;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Libs\ClearSettle\Resource\Request\User  as UserRequest;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
@@ -46,7 +46,7 @@ class ApiLogin
          * @param array $credantials
          * @return bool
          */
-        public function login(User $user, array $credantials)
+        public function login(Authenticatable $user, array $credantials)
         {
             $request = $this->createNewUserRequest();            
             

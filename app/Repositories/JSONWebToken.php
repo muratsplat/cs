@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\User as Model;
 use InvalidArgumentException;
+use App\Contracts\Auth\ClearSettleAuthenticatable as AuthUser;
 
 /**
  * Json Web Token Repository
@@ -33,11 +34,11 @@ class JSONWebToken extends Cache
         /**
          * To bind jwt token value is
          * 
-         * @param \App\User $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @param string $jwtToken
          * @return void
          */
-        public function storeByUser(Model $user, $jwtToken=null)
+        public function storeByUser(AuthUser $user, $jwtToken=null)
         {            
             $key = $this->generateUniqueKey($user);
             
@@ -49,11 +50,11 @@ class JSONWebToken extends Cache
         /**
          * To get jwt token by given User model
          * 
-         * @param \App\User $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @param mixed $default
          * @return mixed
          */
-        public function getByUser(Model $user, $default = null) 
+        public function getByUser(AuthUser $user, $default = null) 
         {
             $key = $this->generateUniqueKey($user); 
             
@@ -63,10 +64,10 @@ class JSONWebToken extends Cache
         /**
          * Determine if Jwt is stored.
          * 
-         * @param \App\User $user
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @return bool
          */
-        public function isStoredByUser(Model $user)
+        public function isStoredByUser(AuthUser $user)
         {
             return (boolean) $this->getByUser($user, null);
         }
@@ -74,17 +75,17 @@ class JSONWebToken extends Cache
         /**
          * To generate unique key for giver user
          * 
-         * @param Model $user
+         * @param App\Contracts\Auth\ClearSettleAuthenticatable $user
          * @return string unique key for given user
          * @throws \InvalidArgumentException
          */
-        protected function generateUniqueKey(Model $user)
+        protected function generateUniqueKey(AuthUser $user)
         {
             $prefix = $this->getPrefixKey();
             
-            if ( $user->exists ) {
+            if ( $user->getAuthIsExist() ) {
                 
-                $str = $prefix . (string) $user->id;
+                $str = $prefix . (string) $user->getAuthIdentifier();
                     
                 return md5($str);
             }

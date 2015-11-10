@@ -2,7 +2,8 @@
 
 namespace App\Providers\ClearSettle;
 
-use App\Contracts\Repository\User as UserRepo;
+use App\Contracts\Repository\User           as UserRepo;
+use App\Services\ClearSettle\ApiLogin       as Login;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -33,17 +34,25 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
      */
     protected $userRepo;
     
+    /**
+     * @var \App\Services\ClearSettle\ApiLogin
+     */
+    protected $login;
+    
         /**
          *  Create a new database and API mixed user provider.
          * 
-         * @param \App\Libs\ClearSettle\Resource\ApiClientManager $clients
-         * @param \App\Contracts\Repository\User    $userRepo  
+         * @param \App\Libs\ClearSettle\Resource\ApiClientManager   $clients
+         * @param \App\Contracts\Repository\User                    $userRepo  
+         * @param \App\Services\ClearSettle\ApiLogin                $login
          */
-        public function __construct(ApiClientManager $clients, UserRepo $userRepo) 
+        public function __construct(ApiClientManager $clients, UserRepo $userRepo, Login $login) 
         {              
             $this->clientManager    = $clients;    
             
             $this->userRepo         = $userRepo;
+            
+            $this->login            = $login;
         }  
 
         /**
@@ -55,16 +64,15 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
         public function retrieveByCredentials(array $credentials) 
         {            
             $user       = $this->getUserByCredentials($credentials);
-                
-            $password   = array_get($credentials, 'password', null); 
             
-            //$this->verifyUserByClearSettle($credentials)
-            if (true) {
+            if ($this->login->login($user, $credentials)) {
                 
                 return $user;
             }
                                
         }
+        
+        protected function loginByApi()
         
         /**
          * To get User model by given credentials
