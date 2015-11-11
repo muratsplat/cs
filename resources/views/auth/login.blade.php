@@ -33,13 +33,20 @@
             .title {
                 font-size: 30px;
             }
+            .spanInfo {
+
+                color: blue;
+
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="content">
                 <div class="title">Login</div>
-                
+                @if( \Session::has('neededLogin') )
+                    <span class="spanInfo">{{\Session::get('neededLogin')}}</span>
+                @endif                
                 <form method="POST" action="/auth/login">
                     {!! csrf_field() !!}
 

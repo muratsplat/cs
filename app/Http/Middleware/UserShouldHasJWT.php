@@ -35,17 +35,16 @@ class UserShouldHasJWT
     {
         $user = \Auth::getUser();
         
-        if (! $user) {
+        if ( is_null($user) ) {
             
             return false;
-        }
-        
-        if ($user instanceof \App\Contracts\Auth\ClearSettleEloquentPayload)  {
-            
+        }        
+       
+        if ($user instanceof \App\Contracts\Auth\ClearSettleEloquentPayload)  {            
             
             return $user->authHasCSJWT();
         }
-        
+
         return false;
     }
 }

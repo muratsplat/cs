@@ -2,12 +2,12 @@
 <?php
 
 //use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+//use Illuminate\Foundation\Testing\DatabaseMigrations;
 //use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use Mockery as m;
 
-class AppHttpControllerAuthTest extends TestCase
+class AppHttpMiddlewareUserShouldHasJWTTest extends TestCase
 {
     // disable middleWares
    // use WithoutMiddleware;
@@ -27,29 +27,18 @@ class AppHttpControllerAuthTest extends TestCase
        
        m::close();
    }
-    
+   
     /**
-     * A basic functional test example.
-     *
      * @return void
      */
-    public function testBasicExample()
-    {
-        $this->visit('/login')
-             ->see('Login');
-    }
-    
-    /**
-     * 
-     *
-     * @return void
-     */
-    public function testFirstLoginTrySuccess()
+    public function testFirstLoginTryUserShouldHasJWT()
     {       
              
-        $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
+        $user = m::mock('App\User');
         
         $user->shouldReceive('getAuthIdentifier')->times(1)->andReturn(1);
+        
+        $user->shouldReceive('authHasCSJWT')->andReturn(true)->times(1);
         
          // mocked user repository
         $userRepo = m::mock('App\Contracts\Repository\User');
@@ -78,27 +67,22 @@ class AppHttpControllerAuthTest extends TestCase
         
         $this->assertRedirectedTo('/console/welcome');
         
-        $this->visit('/')
-             ->see('You are log in System !');
+        $res1 = $this->call('GET', '/console/welcome');       
         
-        $this->assertTrue(\Auth::check());       
+        $this->assertResponseStatus(200);       
     }
     
     /**
-     * 
-     *
      * @return void
      */
-    public function testFirstLoginTrySuccessAndThanLogout()
+    public function testFirstLoginTryUserShouldHasJWTWithNoJWT()
     {       
              
-        $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
+        $user = m::mock('App\User');
         
         $user->shouldReceive('getAuthIdentifier')->times(1)->andReturn(1);
         
-        $user->shouldReceive('setRememberToken')->times(2)->andReturn(null);
-        
-        $user->shouldReceive('save')->times(1)->andReturn(null);
+        $user->shouldReceive('authHasCSJWT')->andReturn(false)->times(1);
         
          // mocked user repository
         $userRepo = m::mock('App\Contracts\Repository\User');
@@ -126,56 +110,13 @@ class AppHttpControllerAuthTest extends TestCase
         $this->assertResponseStatus(302);   
         
         $this->assertRedirectedTo('/console/welcome');
-        
-        $this->visit('/')
-             ->see('You are log in System !');
-        
-        $this->assertTrue(\Auth::check());
-        
-        $res = $this->call('GET', '/logout');
+               
+        $res1 = $this->call('GET', '/console/welcome');
         
         $this->assertResponseStatus(302);
-                
-        $this->visit('/')
-             ->dontSee('You are log in System !');       
-    }
-    
-    /**
-     * 
-     *
-     * @return void
-     */
-    public function testFirstLoginTryUnSuccess()
-    {       
-             
-        $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
-                
-         // mocked user repository
-        $userRepo = m::mock('App\Contracts\Repository\User');
-        
-        $userRepo->shouldReceive('findOrCreateByEmail')->andReturn($user)->times(1);       
-        
-        $this->app->instance('App\Contracts\Repository\User', $userRepo);               
-        
-        $loginServices = m::mock('\App\Services\ClearSettle\ApiLogin');
-        
-        $loginServices->shouldReceive('login')->andReturn(false)->times(1);
-        // mocked login services
-        $this->app->instance('app.clearsettle.login', $loginServices);
-        
-        $post = [
-            
-            '_token'    => csrf_token(),
-            'email'     => 'test@foo.com',
-            'password'  => 'secret',
-        ];
-        
-        
-        $res = $this->call('POST', '/login', $post);            
-       
-        $this->assertResponseStatus(302);   
         
         $this->assertRedirectedTo('/login');
         
+        $this->assertTrue(\Session::has('neededLogin'));        
     }
 }
