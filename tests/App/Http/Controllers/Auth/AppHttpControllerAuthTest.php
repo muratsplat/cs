@@ -76,7 +76,7 @@ class ExampleTest extends TestCase
        
         $this->assertResponseStatus(302);   
         
-        $this->assertRedirectedTo('/');
+        $this->assertRedirectedTo('/console/welcome');
         
         $this->visit('/')
              ->see('You are log in System !');
@@ -125,7 +125,7 @@ class ExampleTest extends TestCase
        
         $this->assertResponseStatus(302);   
         
-        $this->assertRedirectedTo('/');
+        $this->assertRedirectedTo('/console/welcome');
         
         $this->visit('/')
              ->see('You are log in System !');
