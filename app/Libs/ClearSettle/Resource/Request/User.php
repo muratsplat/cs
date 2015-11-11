@@ -109,6 +109,42 @@ Class User  extends Request
             return $this->request('info')->isApproved();           
         }
         
+        /** To send show request to get information 
+         * 
+         * @param \App\Contracts\Auth\ClearSettleEloquentPayload $user
+         * @param int|null $merchantUserId
+         * @return bool
+         */
+        public function show(JWTPayload $user, $merchantUserId = null)
+        {
+            $this->setUser($user);
+            
+            $userId = $merchantUserId ? (integer) $merchantUserId : $user->getAuthCSMerchantUserId();
+            // post paremeters
+            $params = ['id' => $userId];
+            
+            $this->putParams($params);           
+           
+            return $this->request('show')->isApproved();           
+        }
+        
+        /** To send changing password request
+         * 
+         * @param \App\Contracts\Auth\ClearSettleEloquentPayload $user
+         * @param array     $params     ['id' => 1, 'password' => 'secret]
+         * @return bool
+         */
+        public function changePassword(JWTPayload $user, array $params)
+        {
+            $this->setUser($user);
+                
+            $params['merchantId'] = $user->getAuthCSMerchantId();
+                      
+            $this->putParams($params);           
+           
+            return $this->request('changePassword')->isApproved();           
+        }
+        
         /**
          * To get user credentials with request options.
          * 

@@ -490,8 +490,8 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
                         
         $params = [
             'subMerchantId' => null,
-            'name'          => 'Foo',
-            'email'         => 'foo@bar.com',
+            'name'          => 'Foo' . str_random(),
+            'email'         => str_random(). '@bar.com',
             'password'      => 'secret',
         ];
         
@@ -504,7 +504,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $this->assertTrue($jsonReponse);        
         $this->assertTrue($userRequest->isSuccess());       
         
-        //var_dump($userRequest->getBodyAsObject());
+        var_dump($userRequest->getBodyAsObject());
     }
    
     /**
@@ -523,7 +523,7 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         $successInfo = '{
             "status":"APPROVED",
-            "message":"Merchant User Updated",
+            "message":"Merchant User Updated"
             }';
         
         // Create a mock and queue one response.
@@ -537,9 +537,245 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $userRequest = new User($client, $jwtRepo);       
         
         $params = [
-            'subMerchantId' => null,
-            'name'          => 'Foo',
-            'email'         => 'foo@bar.com',
+            'id'            => 1,
+            'name'          => 'FooUpdate',
+            'email'         => 'foo-update@bar.com',
+            'role'          => 'admin',
+            ];
+          
+        // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->shouldReceive('getAuthIsExist')->andReturn(true);
+        $userModel->shouldReceive('getAuthCSMerchantUserId')->andReturn(1);
+        $userModel->shouldReceive('getAuthCSMerchantId')->andReturn(1);
+        $userModel->exists = true;        
+        
+        $jsonReponse = $userRequest->update($userModel, $params);
+        
+        $this->assertTrue($jsonReponse);
+        
+        $this->assertEquals($this->token, $userRequest->getUserJWT());
+       
+        $shouldbeOptions = ['form_params' => $params, 'headers' => ['Authorization' => $this->token]];
+        
+        $this->assertEquals($shouldbeOptions, $userRequest->getClientOptions());
+        
+        $this->assertFalse($userRequest->hasError());
+        
+        $this->assertEquals(json_decode($successInfo), $userRequest->getBodyAsObject());
+    }
+    
+     /**
+     * This test methods sends real http request remote server !!!!
+     */
+    public function disable_testUpdateWithoutMockedObjects() 
+    {
+        $client = \app('app.clearsettle.clients')->newClient();
+        
+        $jwtRepo= $this->getjwtRepoInApp();
+        
+        $userRequest = new User($client, $jwtRepo);
+       
+        $credentials = [
+            'email'     => 'demo@bumin.com.tr',
+            'password'  => 'cjaiU8CV',
+        ];
+        
+           
+        $userRequest->putOptions('form_params', $credentials);        
+        
+        $userRepo  = $this->getUserRepo();
+        
+        $this->callMigration();
+        
+        $newUser = $userRepo->findOrCreateByEmail($credentials['email']);
+        
+        $this->assertTrue($userRequest->login($newUser, $credentials));   
+        
+         // mocking user model
+        $userModel  = $userRequest->getUser();
+        
+        $this->assertNotNull($userModel);
+                        
+        $params = [
+            'id'            => 87,
+            'name'          => 'FooUpdate',
+            'email'         => 'foo-update@bar.com',
+            'role'          => 'admin',
+            ];
+        
+         
+        $jsonReponse = $userRequest->update($userModel, $params);
+        
+        $this->assertNotNull($userRequest->getUser());
+        
+        //$this->assertArrayHasKey('headers', $userRequest->getClientOptions());
+        var_dump($userRequest->getErrors());
+        var_dump($userRequest->getBodyAsObject());
+        $this->assertTrue($jsonReponse);        
+        $this->assertTrue($userRequest->isSuccess());       
+        var_dump($userRequest->getErrors());
+        var_dump($userRequest->getBodyAsObject());
+    }
+    
+      /**
+     * test
+     *
+     * @return void
+     */
+    public function testSendsUpdateRequestFailed()
+    {  
+        // mocking JSONWebToken Repository Instance
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');    
+        $jwtRepo->shouldReceive('isStoredByUser')->andReturn(true)->times(2);
+        
+        $jwtRepo->shouldReceive('getByUser')->andReturn($this->token)->times(3);
+        
+        
+        $failedInfo = '{
+            "code" : 0,
+            "status":"DECLINED",
+            "message":"No query results for model [BuminPspAccountModelMerchantUser]"
+            }';
+
+        
+        // Create a mock and queue one response.
+        $mock = new MockHandler([
+            new Response(404, ['X-Foo' => 'Bar'], $failedInfo),      
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);     
+                
+        $userRequest = new User($client, $jwtRepo);       
+        
+        $params = [
+            'id'            => 1,
+            'name'          => 'FooUpdate',
+            'email'         => 'foo-update@bar.com',
+            'role'          => 'admin',
+            ];
+          
+        // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->shouldReceive('getAuthIsExist')->andReturn(true);
+        $userModel->shouldReceive('getAuthCSMerchantUserId')->andReturn(1);
+        $userModel->shouldReceive('getAuthCSMerchantId')->andReturn(1);
+        $userModel->exists = true;        
+        
+        $jsonReponse = $userRequest->update($userModel, $params);
+        
+        $this->assertFalse($jsonReponse);
+        
+        $this->assertEquals($this->token, $userRequest->getUserJWT());
+       
+        $shouldbeOptions = ['form_params' => $params, 'headers' => ['Authorization' => $this->token]];
+        
+        $this->assertEquals($shouldbeOptions, $userRequest->getClientOptions());
+        
+        $this->assertTrue($userRequest->hasError());
+        
+        $this->assertEquals(json_decode($failedInfo)->message, $userRequest->apiMessage());
+      
+    }
+    
+    /**
+     * test
+     *
+     * @return void
+     */
+    public function testSendsShowRequest()
+    {  
+        // mocking JSONWebToken Repository Instance
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');    
+        $jwtRepo->shouldReceive('isStoredByUser')->andReturn(true)->times(2);
+        
+        $jwtRepo->shouldReceive('getByUser')->andReturn($this->token)->times(3);
+        
+        
+        $successInfo = '{
+            "status":"APPROVED",
+            "merchantUser":{
+                    "id": 59,
+                    "role": "admin",
+                    "email": "test@testtest.com",
+                    "name": "Demo User 2",
+                    "merchantId" : 3
+                }
+            }';
+
+        
+        // Create a mock and queue one response.
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], $successInfo),      
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);     
+                
+        $userRequest = new User($client, $jwtRepo);       
+        
+        $params = [
+            'id'            => 1,         
+            ];
+          
+        // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->shouldReceive('getAuthIsExist')->andReturn(true);
+        $userModel->shouldReceive('getAuthCSMerchantUserId')->andReturn(1);
+        $userModel->shouldReceive('getAuthCSMerchantId')->andReturn(1);
+        $userModel->exists = true;        
+        
+        $jsonReponse = $userRequest->show($userModel, $params);
+        
+      
+        $this->assertTrue($jsonReponse);
+        
+        $this->assertEquals($this->token, $userRequest->getUserJWT());
+       
+        $shouldbeOptions = ['form_params' => $params, 'headers' => ['Authorization' => $this->token]];
+        
+        $this->assertEquals($shouldbeOptions, $userRequest->getClientOptions());
+        
+        $this->assertFalse($userRequest->hasError()); 
+    }
+    
+   /**
+     * test
+     *
+     * @return void
+     */
+    public function testSendsChangePasswordRequest()
+    {  
+        // mocking JSONWebToken Repository Instance
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');    
+        $jwtRepo->shouldReceive('isStoredByUser')->andReturn(true)->times(1);
+        
+        $jwtRepo->shouldReceive('getByUser')->andReturn($this->token)->times(1);
+        
+        
+        $successInfo = '{
+                "status":"APPROVED",
+                "message":"Merchant User Password Updated",
+                "id":59
+                }';
+
+        
+        // Create a mock and queue one response.
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], $successInfo),      
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);     
+                
+        $userRequest = new User($client, $jwtRepo);       
+        
+        $params = [
+            'id'            => 1,
             'password'      => 'secret',
             ];
           
@@ -551,21 +787,14 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $userModel->shouldReceive('getAuthCSMerchantId')->andReturn(1);
         $userModel->exists = true;        
         
-        $jsonReponse = $userRequest->create($userModel, $params);
-        
-        $this->assertTrue($jsonReponse);
-        
-        $this->assertEquals($this->token, $userRequest->getUserJWT());
-        
-        $params['merchantId'] = 1;
-        $shouldbeOptions = ['form_params' => $params, 'headers' => ['Authorization' => $this->token]];
-        
-        $this->assertEquals($shouldbeOptions, $userRequest->getClientOptions());
-        
-        $this->assertFalse($userRequest->hasError());
-        
-        $this->assertEquals(json_decode($successInfo), $userRequest->getBodyAsObject());
+        $jsonReponse = $userRequest->changePassword($userModel, $params);
+             
+        $this->assertTrue($jsonReponse);    
+                     
+        $this->assertFalse($userRequest->hasError()); 
     }
+    
+    
     
     /**
      * 
