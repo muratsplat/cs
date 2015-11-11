@@ -106,4 +106,76 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298';
         
         $this->assertTrue($repo->isStoredByUser($user));      
     }
+    
+    
+    public function testPlayloadOnToken()
+    {
+       $jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
+iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298';
+        list( , $playload, ) = explode('.',$jwt );
+        
+        $playloadJSONAsString = base64_decode($playload);
+        
+        $encodedPlayload = '{"merchantUserId":1,"role":"admin","merchantId":1,"subMerchantIds":[],"timestamp":1444389880}';
+        
+        $this->assertEquals($encodedPlayload, $playloadJSONAsString);     
+    }
+    
+    public function testPlayloadByUser()
+    {
+        
+        $cache  = m::mock('Illuminate\Contracts\Cache\Repository');
+        
+        $cache->shouldReceive('put')->times(1)->andReturnNull();
+        
+        $jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
+iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298';
+        
+        $cache->shouldReceive('get')->times(3)->andReturn($jwt);
+        
+        $repo   = new JSONWebToken($cache);
+        
+        $user   = factory(App\User::class)->make();
+        
+        $user->exists = true;
+        
+        $this->assertNotNull($user);
+        
+        $user->id = 1;    
+        
+        
+        $repo->storeByUser($user, $jwt);
+        
+        $paylodObject = $this->decodeBase64($jwt);
+        
+        $this->assertNotNull($paylodObject);
+        
+        //{"merchantUserId":1,"role":"admin","merchantId":1,"subMerchantIds":[],"timestamp":1444389880}
+        
+        $this->assertObjectHasAttribute('merchantUserId', $paylodObject);
+        $this->assertObjectHasAttribute('role', $paylodObject);
+        $this->assertObjectHasAttribute('merchantId', $paylodObject);
+        $this->assertObjectHasAttribute('subMerchantIds', $paylodObject);        
+        $this->assertObjectHasAttribute('timestamp', $paylodObject);        
+        
+        $paylodObjectByRepo = $repo->getPayloadByUser($user); 
+        
+        $this->assertEquals($paylodObjectByRepo, $paylodObject);
+        
+        $this->assertEquals('admin', $paylodObject->role);    
+               
+    }
+    
+    
+    private function decodeBase64($token="")
+    {
+        list( , $playload, ) = explode('.',$token );
+        
+        $playloadJSONAsString = base64_decode($playload);        
+        
+        return json_decode($playloadJSONAsString);
+    }
+    
+ 
+
 }

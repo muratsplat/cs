@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Auth\Passwords\CanResetPassword;
 
 use App\Contracts\Auth\ClearSettleAuthenticatable;
+use App\Contracts\Auth\ClearSettleEloquentPayload;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use App\Contracts\Auth\ClearSettleEloquentPayloadAble;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 //use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
@@ -16,10 +18,14 @@ use App\Contracts\Auth\ClearSettleEloquentAuthenticatable;
 
 class User extends Model implements AuthenticatableContract,
                                     AuthorizableContract,
-                                    ClearSettleAuthenticatable
+                                    ClearSettleAuthenticatable,
+                                    ClearSettleEloquentPayload
                                     //CanResetPasswordContract
 {
-    use Authenticatable, Authorizable, ClearSettleEloquentAuthenticatable; //, CanResetPassword;
+    use Authenticatable,
+        Authorizable, 
+        ClearSettleEloquentAuthenticatable,
+        ClearSettleEloquentPayloadAble; //, CanResetPassword;
 
     /**
      * The database table used by the model.

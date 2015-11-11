@@ -93,4 +93,61 @@ class JSONWebToken extends Cache implements IjwtRepo
             throw new InvalidArgumentException('Given user not saved before on db!');           
         }
         
+        
+        /**
+         * To get payload in JWT
+         * 
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
+         * @param bool $strict
+         * @return \stdClass|null
+         */
+        public function getPayloadByUser(AuthUser $user, $strict = false)
+        {
+            if ( $this->isNotStoredByUser($user)) {
+                
+                return  null;
+            }
+            
+            $playload = $this->getRawPayloadByUser($user);
+                
+            $result = base64_decode($playload, $strict);           
+            
+            if ( ! $result ) {
+                
+                return null;
+            }
+            
+            return json_decode($result);
+        }
+        
+        /**
+         * To get raw payload data
+         * 
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
+         * @return string   raw playload data in JWT
+         */
+        protected function getRawPayloadByUser(AuthUser $user)
+        {            
+            if ($this->isStoredByUser($user)) { 
+                
+                $token = $this->getByUser($user);
+                
+                list( , $playload, ) = explode('.', $token);
+            
+                return $playload;
+            }
+            
+            return null;
+        }
+        
+        /**
+         * Determine if Jwt is not stored.
+         * 
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
+         * @return bool
+         */
+        public function isNotStoredByUser(AuthUser $user)
+        {
+            return  ! (boolean) $this->getByUser($user, null);
+        }
 }

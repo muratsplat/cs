@@ -37,4 +37,21 @@ interface JSONWebToken
          * @return bool
          */
         public function isStoredByUser(AuthUser $user);
+        
+        /**
+         * To get payload in JWT
+         * 
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
+         * @param bool $strict
+         * @return \stdClass|null
+         */
+        public function getPayloadByUser(AuthUser $user, $strict = false);        
+        
+        /**
+         * Determine if Jwt is not stored.
+         * 
+         * @param \App\Contracts\Auth\ClearSettleAuthenticatable $user
+         * @return bool
+         */
+        public function isNotStoredByUser(AuthUser $user);
 }

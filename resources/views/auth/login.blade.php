@@ -15,8 +15,8 @@
                 padding: 0;
                 width: 100%;
                 display: table;
-                font-weight: 100;
-                font-family: 'Lato';
+                font-weight: 200;
+                font-family: 'Arial';
             }
 
             .container {
