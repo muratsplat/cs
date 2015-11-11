@@ -29,7 +29,8 @@ Class User  extends Request
         'create'        =>  ['POST' => 'merchant/user/create'],
         'update'        =>  ['POST' => 'merchant/user/update'],       
         'show'          =>  ['POST' => 'merchant/user/show'],
-        'changePassword'=>  ['POST' => 'merchant/user/changePassword'],        
+        'changePassword'=>  ['POST' => 'merchant/user/changePassword'],
+        'delete'        =>  ['POST' => 'merchant/user/delete']
     ]; 
 
         /**
@@ -143,6 +144,24 @@ Class User  extends Request
             $this->putParams($params);           
            
             return $this->request('changePassword')->isApproved();           
+        }        
+        
+        /** 
+         * To send delete user request
+         * 
+         * @param \App\Contracts\Auth\ClearSettleEloquentPayload $user
+         * @param int  $merchantUserIdentifier  merchant user id is wanted deleting
+         * @return bool
+         */
+        public function delete(JWTPayload $user, $merchantUserIdentifier)
+        {
+            $this->setUser($user);
+                
+            $params = ['id' => $merchantUserIdentifier];
+                      
+            $this->putParams($params);           
+           
+            return $this->request('delete')->isApproved();           
         }
         
         /**

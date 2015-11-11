@@ -794,7 +794,55 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $this->assertFalse($userRequest->hasError()); 
     }
     
-    
+    /**
+     * test
+     *
+     * @return void
+     */
+    public function testDeleteUserRequest()
+    {  
+        // mocking JSONWebToken Repository Instance
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');    
+        $jwtRepo->shouldReceive('isStoredByUser')->andReturn(true)->times(1);
+        
+        $jwtRepo->shouldReceive('getByUser')->andReturn($this->token)->times(1);
+        
+        
+        $successInfo = '{
+                "status":"APPROVED",
+                "message":"Merchant User Deleted",
+                "id":"56"
+                }';
+
+        
+        // Create a mock and queue one response.
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], $successInfo),      
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);     
+                
+        $userRequest = new User($client, $jwtRepo);       
+        
+        $params = [
+            'id'            => 1,
+            ];
+          
+        // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->shouldReceive('getAuthIsExist')->andReturn(true);
+        $userModel->shouldReceive('getAuthCSMerchantUserId')->andReturn(1);
+        $userModel->shouldReceive('getAuthCSMerchantId')->andReturn(1);
+        $userModel->exists = true;        
+        
+        $jsonReponse = $userRequest->delete($userModel, $params);
+             
+        $this->assertTrue($jsonReponse);    
+                     
+        $this->assertFalse($userRequest->hasError()); 
+    }
     
     /**
      * 
