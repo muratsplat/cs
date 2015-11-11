@@ -3,12 +3,14 @@
 namespace App\Libs\ClearSettle\Resource\Request;
 
 use App\Contracts\Auth\ClearSettleAuthenticatable;
+use App\Contracts\Auth\ClearSettleEloquentPayload as JWTPayload;
 
 /**
- * User Requests
+ * User Requests For Clear Settle Api
  * 
- * 
- * This class to sends  login request Clear Settle Api..
+ * Note:
+ *  Sended parameters must be validated on Controller !!!
+ *  This class does not validate sended parameters.
  *
  * @author Murat Ödünç <murat.asya@gmail.com>
  */
@@ -16,7 +18,7 @@ Class User  extends Request
 {    
     
     /**
-     * Requets
+     * Requests
      *
      * @var array
      */
@@ -28,7 +30,7 @@ Class User  extends Request
         'update'        =>  ['POST' => 'merchant/user/update'],       
         'show'          =>  ['POST' => 'merchant/user/show'],
         'changePassword'=>  ['POST' => 'merchant/user/changePassword'],        
-    ];    
+    ]; 
 
         /**
          * To send login request using given user model
@@ -49,10 +51,63 @@ Class User  extends Request
                 $this->storeNewJWTokenOnUser();
                 
                 return true;
-            }         
+            }
+            
             return false;
         }
         
+        /**
+         * To create user request to get information of given user
+         * 
+         * @param \App\Contracts\Auth\ClearSettleEloquentPayload $user
+         * @param array $attributes
+         * @return bool
+         */
+        public function create(JWTPayload $user, array $attributes)
+        {            
+            $this->setUser($user);           
+            
+            $attributes['merchantId'] = $user->getAuthCSMerchantId();            
+            
+            $this->putParams($attributes);           
+           
+            return $this->request('create')->isApproved();           
+        }
+        
+        /**
+         * To update user request to get information of given user
+         * 
+         * @param \App\Contracts\Auth\ClearSettleEloquentPayload $user
+         * @param array $attributes
+         * @return bool
+         */
+        public function update(JWTPayload $user, array $attributes)
+        {            
+            $this->setUser($user);                
+            
+            $this->putParams($attributes);           
+           
+            return $this->request('update')->isApproved();           
+        }
+        
+        /** To send info request to get information of given user
+         * 
+         * @param \App\Contracts\Auth\ClearSettleEloquentPayload $user
+         * @param int|null $merchantUserId
+         * @return bool
+         */
+        public function info(JWTPayload $user, $merchantUserId = null)
+        {
+            $this->setUser($user);
+            
+            $userId = $merchantUserId ? (integer) $merchantUserId : $user->getAuthCSMerchantUserId();
+            // post paremeters
+            $params = ['merchantUserId' => $userId];
+            
+            $this->putParams($params);           
+           
+            return $this->request('info')->isApproved();           
+        }
         
         /**
          * To get user credentials with request options.

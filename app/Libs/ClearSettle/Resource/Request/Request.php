@@ -118,7 +118,7 @@ abstract class Request implements MessageProvider
          * 
          * @return static
          */       
-        public static function create(Client $client, JWTRepo $jwt)
+        public static function newInstance(Client $client, JWTRepo $jwt)
         {
             return new static($client, $jwt);        
         }
@@ -271,6 +271,16 @@ abstract class Request implements MessageProvider
         }
         
         /**
+         * To get body in the response
+         * 
+         * @return \stdClass
+         */
+        public function getBodyAsObject()
+        {
+            return $this->convertResponseBodyToJSON();
+        }
+        
+        /**
          * To get params by given action for new http request 
          * 
          * @param string    $name
@@ -291,8 +301,7 @@ abstract class Request implements MessageProvider
             }          
             
             return [$httpVerb, $path];
-        }
-        
+        }        
         
         /**
          * Determine if the api approved to senden request
@@ -310,7 +319,25 @@ abstract class Request implements MessageProvider
             
             return false;
             
-        }           
+        }   
+        
+        /**
+         * To get API's message after request
+         * 
+         * @return string|null
+         */
+        public function apiMessage()                
+        {
+            if ( $this->isReady() && $this->isJSON() ) {
+                
+                $message = $this->convertResponseBodyToJSON();
+                               
+                return $message->message;
+            }
+            
+            return null;
+            
+        } 
         
         /**
          * Catch throws and report them via log service
@@ -470,7 +497,7 @@ abstract class Request implements MessageProvider
          */
         public function userReady()
         {            
-            return ! is_null($this->user) && $this->user->exists;           
+            return ! is_null($this->user) && $this->user->getAuthIsExist();           
         }
         
         /**
@@ -530,11 +557,11 @@ abstract class Request implements MessageProvider
         public function getClientOptions()
         {            
             if ( $this->userHasJWT() ) {
-                
                $headers = ['Authorization' => $this->getUserJWT()];
-               
+                            
                $this->putHeaders($headers);                
-            }                   
+            } 
+           
             return $this->options;
         }
         

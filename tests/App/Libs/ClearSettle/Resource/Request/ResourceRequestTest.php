@@ -220,8 +220,49 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $fooRquest->putOptions('form_params', $credentials);
         
         $this->assertTrue($fooRquest->request('login')->isApproved());       
-       
+         
+    }
+    
+        /**
+     * A basic test
+     *
+     * @return void
+     */
+    public function testGetUserReturnsNullIssue()
+    {           
+        $jwtRepo   = m::mock('App\Repositories\JSONWebToken');   
+        // the example of login json response
+        $responseBody = '{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtZXJjaGFudFVzZXJJZCI6MSwicm9sZSI6ImFkbWluIiwibWVyY2hhbnRJZCI6MSwic3ViTWVyY2hhbnRJZHMiOltdLCJ0aW1lc3RhbXA
+iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVED"}';
         
+        // Create a mock and queue two responses.
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], $responseBody),      
+        ]);
+        
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);   
+        
+        $fooRquest = new FooRequest($client, $jwtRepo);
+        
+        $fooRquest->request('login', []);
+        
+        $this->assertTrue($fooRquest->isReady());
+        
+        $this->assertTrue($fooRquest->isJSON());
+        
+        $this->assertTrue($fooRquest->isApproved());       
+        
+                // mocking user model
+        $userModel  = m::mock('App\User');        
+        $userModel->shouldReceive('setAttribute')->andReturn();        
+        $userModel->shouldReceive('getAuthIsExist')->andReturn('true');
+        $userModel->shouldReceive('getAuthCSMerchantUserId')->andReturn(1);
+        $userModel->exists = true;        
+        $userModel->id = 1;
+        $fooRquest->setUser($userModel);
+        
+        $this->assertNotNull($fooRquest->getUser());
     }
    
 }

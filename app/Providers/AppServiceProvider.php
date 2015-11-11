@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
         
             $clientManager = $app->make('app.clearsettle.clients');
         
-            $userRequest = User::create($clientManager->newClient(), $jwtRepo);
+            $userRequest = User::newInstance($clientManager->newClient(), $jwtRepo);
         
             return new ApiLogin($jwtRepo, $userRequest);    
         });
