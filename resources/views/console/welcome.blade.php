@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Laravel</title>
+        <title>Uygulama</title>
 
         <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
 
@@ -33,21 +33,38 @@
             .title {
                 font-size: 20px;    
             }
+
+            .spanInfo {
+                color :red;
+            }
         </style>
     </head>
     <body>
-
+        {{--  Check Login --}}
         @if(Auth::check())
         
             <h1>You are log in System !</h1>
             <h2> User: <a href="#" alt="User Details">{{$user->email}}</a> </h2>
         
         @endif
+
+        
+        {{-- Errors --}}
+        @if( ! $errors->isEmpty() )
+            <h5 class="spanInfo">Errors:</h5>
+            <ul>
+                @foreach($errors->all() as $msg)
+                     <span class="spanInfo">{{$msg}}</span>
+                @endforeach
+            </ul>
+           
+        @endif
+
         <h3>Methods</h3>
         <ul>            
             <li>
-                Get Transaction Reports : <br>
-                {!! Form::open( ['action' => 'TransactionApi@postReport'] )!!}
+                <h4>Get Transaction Reports :</h4>
+                {!! Form::open( ['action' => 'TransactionApi@postReport', 'M'] )!!}
                     {!! Form::label('fromDate', 'From Date*') !!}
                     {!! Form::text('fromDate', '1970-12-01') !!}
 

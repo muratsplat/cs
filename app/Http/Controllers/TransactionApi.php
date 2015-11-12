@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TransactionReport;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
 class TransactionApi extends Controller
@@ -36,8 +38,15 @@ class TransactionApi extends Controller
         }
         
         
-        public function postReport()
+        /**
+         * Show transaction report
+         * 
+         * @param App\Http\Requests\TransactionReport $request
+         */
+        public function postReport(TransactionReport $request)
         {
+            
+            
             
         }
         
