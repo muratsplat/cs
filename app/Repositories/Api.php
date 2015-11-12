@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Exception;
 use InvalidArgumentException;
-use App\Contracts\Repository\JSONWebToken;
+use App\Contracts\Repository\JSONWebToken           as JWTRepo;
 use App\Contracts\Auth\ClearSettleAuthenticatable   as CSAuth;
 use App\Libs\ClearSettle\Resource\ApiClientManager;
 
@@ -37,7 +37,7 @@ abstract class Api
          * @param \App\Libs\ClearSettle\Resource\ApiClientManager $manager
          * @param \App\Contracts\Repository\JSONWebToken  $jwtRepo
          */
-        public function __construct(ApiClientManager $manager, JSONWebToken $jwtRepo) 
+        public function __construct(ApiClientManager $manager, JWTRepo $jwtRepo) 
         {            
             $this->clientManager    = $manager;
             

@@ -92,34 +92,34 @@ class ApiClientManagerTest extends TestCase
     }
     
         
-    /**
-     * Functional test
-     * 
-     * @test
-     */
-    public function disable_testWithRealObjectInIOC() 
-    {
-        $manager = \app('app.clearsettle.clients');
-        
-        $client = $manager->newClient();    
-            
-        $response = $client->post(
-                'merchant/user/login', 
-                [
-                    'verify'        => true,
-                    'form_params'   => [
-                        
-                        'email'     => 'demo@bumin.com.tr',
-                        'password'  => 'cjaiU8CV'
-                    ],
-                
-                ]
-                
-                );  
-        
-        $this->assertEquals( 200, $response->getStatusCode() );        
-            
-    }
+//    /**
+//     * Functional test
+//     * 
+//     * @test
+//     */
+//    private function disable_WithRealObjectInIOC() 
+//    {
+//        $manager = \app('app.clearsettle.clients');
+//        
+//        $client = $manager->newClient();    
+//            
+//        $response = $client->post(
+//                'merchant/user/login', 
+//                [
+//                    'verify'        => true,
+//                    'form_params'   => [
+//                        
+//                        'email'     => 'demo@bumin.com.tr',
+//                        'password'  => 'secret'
+//                    ],
+//                
+//                ]
+//                
+//                );  
+//        
+//        $this->assertEquals( 200, $response->getStatusCode() );        
+//            
+//    }
     
     /**
      * test

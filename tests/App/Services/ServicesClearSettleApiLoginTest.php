@@ -86,7 +86,7 @@ class ServicesClearSettleApiLoginTest extends TestCase
      *
      * @return void
      */
-    public function testLoginTryWithoutMockedObjectsUnsuccess()
+    public function disable_testLoginTryWithoutMockedObjectsUnsuccess()
     {       
         
         $loginService = \app('app.clearsettle.login');          
@@ -104,7 +104,7 @@ class ServicesClearSettleApiLoginTest extends TestCase
      *
      * @return void
      */
-    public function testLoginTryWithoutMockedObjectsSuccess()
+    public function disable_testLoginTryWithoutMockedObjectsSuccess()
     {     
         
         $loginService = \app('app.clearsettle.login');          

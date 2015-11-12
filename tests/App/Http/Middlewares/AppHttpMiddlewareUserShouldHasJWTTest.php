@@ -40,10 +40,14 @@ class AppHttpMiddlewareUserShouldHasJWTTest extends TestCase
         
         $user->shouldReceive('authHasCSJWT')->andReturn(true)->times(1);
         
+        $user->shouldReceive('getAttribute')->with('email')->andReturn('foo@bar.com');        
+                
          // mocked user repository
         $userRepo = m::mock('App\Contracts\Repository\User');
         
         $userRepo->shouldReceive('findOrCreateByEmail')->andReturn($user)->times(1);       
+        
+        $userRepo->shouldReceive('getModel')->andReturn($user);
         
         $this->app->instance('App\Contracts\Repository\User', $userRepo);               
         
@@ -84,10 +88,16 @@ class AppHttpMiddlewareUserShouldHasJWTTest extends TestCase
         
         $user->shouldReceive('authHasCSJWT')->andReturn(false)->times(1);
         
+        $user->shouldReceive('setRememberToken')->andReturn();
+        
+        $user->shouldReceive('save')->andReturn();
+        
          // mocked user repository
         $userRepo = m::mock('App\Contracts\Repository\User');
         
         $userRepo->shouldReceive('findOrCreateByEmail')->andReturn($user)->times(1);       
+                
+        $userRepo->shouldReceive('getModel')->andReturn($user);
         
         $this->app->instance('App\Contracts\Repository\User', $userRepo);               
         
