@@ -95,6 +95,7 @@ abstract class Request implements MessageProvider
      */
     protected $options = [];
 
+
         /**
          * Create Instance
          * 
@@ -194,7 +195,17 @@ abstract class Request implements MessageProvider
         }        
         
         /**
-         * To set Response
+         * Get Response
+         * 
+         * @return \Psr\Http\Message\ResponseInterface|null
+         */
+        public function getResponse() 
+        {
+            return $this->response;
+        }
+        
+        /**
+         * Set Response
          * 
          * @param \Psr\Http\Message\ResponseInterface  $res
          */

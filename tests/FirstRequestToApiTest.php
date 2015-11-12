@@ -44,7 +44,7 @@ class ApiRequestTest extends TestCase
                     'form_params'   => [
                         
                         'email'     => 'demo@bumin.com.tr',
-                        'password'  => 'cjaiU8CV'
+                        'password'  => 'secret' // needed
                     ],
                 
                 ]

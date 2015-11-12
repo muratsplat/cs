@@ -74,10 +74,20 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         
         
         $successInfo = '{
-            "status":"APPROVED",
-            "message":"Merchant User Created",
-            "id":59
-            }';
+	"status" : "APPROVED",
+	"response" : [
+		{
+		"count" :283,
+		"total" :28300,
+		"currency": "USD"
+		},
+		{
+		"count" :987,
+		"total" :282300,
+		"currency": "AFN"
+		}
+            ]
+        }';
         
         // Create a mock and queue one response.
         $mock = new MockHandler([
@@ -105,13 +115,14 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $this->assertFalse($request->hasError());
         
         $this->assertEquals(json_decode($successInfo), $request->getBodyAsObject());
+                
     }  
     
     
     /**
      * This test methods sends real http request remote server !!!!
      */
-    public function testReportWithoutMockedObjects() 
+    public function disable_testReportWithoutMockedObjects() 
     {
         $client = \app('app.clearsettle.clients')->newClient();
         
@@ -142,8 +153,6 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $request = new Transaction($client, $jwtRepo);
         $jsonReponse = $request->report($userModel, '1990-01-01', '2015-11-01', null, null);
       
-        
-        var_dump($request->getBodyAsObject());
         
         $this->assertNotNull($request->getUser());
         
