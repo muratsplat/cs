@@ -5,7 +5,10 @@ namespace App\Libs\ClearSettle\Resource;
 use Exception;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
+use App\Contracts\Repository\JSONWebToken;
+use Illuminate\Contracts\Config\Repository      as Config;
 use Illuminate\Contracts\Container\Container;
+
 
 /**
  * This class manages ClearSettle API client
@@ -26,16 +29,35 @@ class ApiClientManager {
      */
     protected $config;
     
+    /**
+     * @var \App\Contracts\Repository\JSONWebToken
+     */
+    protected $jwtRepo;
+    
+    /**
+     * Requests
+     *
+     * @var array
+     */
+    protected $requests = [
+        
+        'user'  => \App\Libs\ClearSettle\Resource\Request\User::class,
+    ];
+    
         /**
          * Create a new Api Client Manager instance.
          *
-         * @param  \Illuminate\Contracts\Container\Container  $container
+         * @param   \Illuminate\Contracts\Container\Container   $container
+         * @param   \App\Contracts\Repository\JSONWebToken      $jwtRepo
+         * @param   \Illuminate\Contracts\Config\Repository     $config
          */
-        public function __construct(Container $container)
+        public function __construct(Container $container, JSONWebToken $jwtRepo, Config $config)
         {                        
             $this->container    = $container;            
        
-            $this->config       = $container->make('config');            
+            $this->config       = $config;
+            
+            $this->jwtRepo      = $jwtRepo;
         }        
    
         /**
@@ -98,6 +120,25 @@ class ApiClientManager {
             }
             
             return $options;             
+        }
+        
+        /**
+         * To create new Request
+         * 
+         * @param string $name      request name
+         * @return \App\Libs\ClearSettle\Resource\Request
+         * @throws \InvalidArgumentException
+         */
+        public function createNewRequest($name)
+        {
+            if (array_key_exists($name, $this->requests)) {
+                
+                $class = array_get($this->requests, $name);
+                
+                return new $class($this->newClient(), $this->jwtRepo);
+            }
+            
+            throw new InvalidArgumentException("Unkown Request: [$name] !");            
         }
    
 }

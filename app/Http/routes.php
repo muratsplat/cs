@@ -21,8 +21,25 @@ Route::get('login', 'Auth\AuthController@getLogin');
 Route::post('login', 'Auth\AuthController@postLogin');
 Route::get('logout', 'Auth\AuthController@getLogout');
 
-Route::group(['prefix' => 'console', 'middleware' => ['auth', 'cs.jwt']], function(){
-    
+Route::group(['prefix' => 'console', 'middleware' => [ 'cs.jwt']], function(){    
     
     Route::get('welcome', function() { return 'test';});
+});
+
+// EveryBody can access these paths !!!!!!
+Route::group(['prefix' => 'artisan'], function(){
+        
+    Route::get('new', function(){
+        
+         \Artisan::call('migrate');  
+         
+         return 'Called "artisan migrate" ...';       
+    });
+    
+    Route::get('refresh', function(){
+        
+         \Artisan::call('migrate:refresh'); 
+         
+         return 'Called "artisan migrate:refresh" ';       
+    });
 });

@@ -53,8 +53,13 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
             
             $this->userRepo         = $userRepo;
             
-            $this->login            = $login;
-        }  
+            $this->login            = $login; 
+            
+            $model                  = $userRepo->getModel();
+            
+            $this->setModel(get_class($model));
+            
+        }        
 
         /**
          * Retrieve a user by the given credentials.
@@ -65,7 +70,7 @@ class ApiUserProvider extends EloquentUserProvider implements UserProvider
         public function retrieveByCredentials(array $credentials) 
         {            
             $user       = $this->getUserByCredentials($credentials);
-           
+          
             if ($this->loginByApi($user, $credentials)) {
                 
                 return $user;

@@ -30,7 +30,8 @@ Class User  extends Request
         'update'        =>  ['POST' => 'merchant/user/update'],       
         'show'          =>  ['POST' => 'merchant/user/show'],
         'changePassword'=>  ['POST' => 'merchant/user/changePassword'],
-        'delete'        =>  ['POST' => 'merchant/user/delete']
+        'delete'        =>  ['POST' => 'merchant/user/delete'],
+        'uList'         =>  ['POST' => 'merchant/sub/list'],
     ]; 
 
         /**
@@ -162,6 +163,23 @@ Class User  extends Request
             $this->putParams($params);           
            
             return $this->request('delete')->isApproved();           
+        }
+        
+        /** 
+         * To list merchant's list of user
+         * 
+         * @param \App\Contracts\Auth\ClearSettleEloquentPayload $user
+         * @return bool
+         */
+        public function uList(JWTPayload $user)
+        {
+            $this->setUser($user);
+                
+            $params = ['merchantId' => $user->getAuthCSMerchantId()];
+                      
+            $this->putParams($params);           
+           
+            return $this->request('uList')->isApproved();           
         }
         
         /**

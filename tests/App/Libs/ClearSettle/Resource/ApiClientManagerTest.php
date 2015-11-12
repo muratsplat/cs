@@ -41,9 +41,11 @@ class ApiClientManagerTest extends TestCase
      */
     public function testBasicExample()
     {   
-        $this->container->shouldReceive("make")->times(1);
+        $jwtRepo = m::mock('App\Contracts\Repository\JSONWebToken');
         
-        $manager = new Manager($this->container);
+        $config  = $this->mockedConfig();
+        
+        $manager = new Manager($this->container, $jwtRepo, $config);
         
         $this->assertNotNull($manager);        
         
@@ -66,10 +68,11 @@ class ApiClientManagerTest extends TestCase
                     'timeout'   => 3,
                 ]
         );
+       
         
-        $this->container->shouldReceive('make')->with("config")->andReturn($config);
+        $jwtRepo = m::mock('App\Contracts\Repository\JSONWebToken');
         
-        $manager = new Manager($this->container);
+        $manager = new Manager($this->container, $jwtRepo, $config);
         
         $client = $manager->newClient();
         
@@ -94,7 +97,7 @@ class ApiClientManagerTest extends TestCase
      * 
      * @test
      */
-    public function testWithRealObjectInIOC() 
+    public function disable_testWithRealObjectInIOC() 
     {
         $manager = \app('app.clearsettle.clients');
         
@@ -117,5 +120,34 @@ class ApiClientManagerTest extends TestCase
         $this->assertEquals( 200, $response->getStatusCode() );        
             
     }
-
+    
+    /**
+     * test
+     *
+     * @return void
+     */
+    public function testRequest()
+    {           
+        
+        $jwtRepo = m::mock('App\Contracts\Repository\JSONWebToken');
+        
+        $config  = $this->mockedConfig();
+        
+        $config->shouldReceive('get')->with('api.default', null)->andReturn('Foo');
+        
+        $config->shouldReceive('get')->with('api.apis.Foo', [])->andReturn(
+                [
+                    'base_url'  => 'https//www.google.com',
+                    'verify'    => true,
+                    'timeout'   => 3,
+                ]
+        );
+        
+        
+        $manager = new Manager($this->container, $jwtRepo, $config);
+        
+        $this->assertNotNull($manager->createNewRequest('user'));        
+        
+    }
+    
 }

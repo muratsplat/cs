@@ -47,7 +47,7 @@
                 @if( \Session::has('neededLogin') )
                     <span class="spanInfo">{{\Session::get('neededLogin')}}</span>
                 @endif                
-                <form method="POST" action="/auth/login">
+                <form method="POST" action="/login">
                     {!! csrf_field() !!}
 
                     <div>

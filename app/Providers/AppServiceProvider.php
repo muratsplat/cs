@@ -46,12 +46,15 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function registerClearSettleApiClients()
     {
-        $this->app->singleton('app.clearsettle.clients', function($app) {            
+        $this->app->singleton('app.clearsettle.clients', function($app) {   
             
-            return new ApiClientManager($app);    
+            $jwtRepo    = $app->make('App\Contracts\Repository\JSONWebToken');
+            
+            $config     = $app['config'];
+            
+            return new ApiClientManager($app, $jwtRepo, $config);    
         });
-    }
-    
+    }    
         
     /**
      * Register ClearSettle Api Login Service

@@ -844,6 +844,53 @@ iOjE0NDQzODk4ODB9.zPxVu4fkRqIy1uG2fO3X2RbxiI4otK_HG7M4MMTB298","status":"APPROVE
         $this->assertFalse($userRequest->hasError()); 
     }
     
+        /**
+     * This test methods sends real http request remote server !!!!
+     */
+    public function disable_testListUserWithoutMockedObjects() 
+    {
+        $client = \app('app.clearsettle.clients')->newClient();
+        
+        $jwtRepo= $this->getjwtRepoInApp();
+        
+        $userRequest = new User($client, $jwtRepo);
+       
+        $credentials = [
+            'email'     => 'demo@bumin.com.tr',
+            'password'  => 'cjaiU8CV',
+        ];
+        
+           
+        $userRequest->putOptions('form_params', $credentials);        
+        
+        $userRepo  = $this->getUserRepo();
+        
+        $this->callMigration();
+        
+        $newUser = $userRepo->findOrCreateByEmail($credentials['email']);
+        
+        $this->assertTrue($userRequest->login($newUser, $credentials));   
+        
+                // mocking user model
+        $userModel  = $userRequest->getUser();
+        
+        $this->assertNotNull($userModel);
+                        
+            
+         
+        $jsonReponse = $userRequest->uList($userModel);
+        
+        var_dump($userRequest->getBodyAsObject());
+        
+        $this->assertNotNull($userRequest->getUser());
+        
+        //$this->assertArrayHasKey('headers', $userRequest->getClientOptions());
+        $this->assertTrue($jsonReponse);        
+        $this->assertTrue($userRequest->isSuccess());       
+        
+        
+    }
+    
     /**
      * 
      * @return \App\Contracts\Repository\JSONWebToken

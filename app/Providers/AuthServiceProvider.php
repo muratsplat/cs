@@ -26,10 +26,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(GateContract $gate)
     {
-        //parent::registerPolicies($gate);
+        parent::registerPolicies($gate);
      
 
-        \Auth::extend('clearSettleApi', function($app)  {
+        \Auth::extend('cs', function($app)  {
 
             $userRepo       = $app->make('App\Contracts\Repository\User');
 
