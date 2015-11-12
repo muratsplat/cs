@@ -46,6 +46,8 @@ class AppHttpControllerAuthTest extends TestCase
      */
     public function testFirstLoginTrySuccess()
     {       
+        
+        $userModel = m::mock('App\user');
              
         $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
         
@@ -53,6 +55,8 @@ class AppHttpControllerAuthTest extends TestCase
         
          // mocked user repository
         $userRepo = m::mock('App\Contracts\Repository\User');
+        
+        $userRepo->shouldReceive('getModel')->andReturn($userModel);
         
         $userRepo->shouldReceive('findOrCreateByEmail')->andReturn($user)->times(1);       
         
@@ -92,6 +96,8 @@ class AppHttpControllerAuthTest extends TestCase
     public function testFirstLoginTrySuccessAndThanLogout()
     {       
              
+        $userModel = m::mock('App\user');
+         
         $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
         
         $user->shouldReceive('getAuthIdentifier')->times(1)->andReturn(1);
@@ -102,6 +108,8 @@ class AppHttpControllerAuthTest extends TestCase
         
          // mocked user repository
         $userRepo = m::mock('App\Contracts\Repository\User');
+        
+       $userRepo->shouldReceive('getModel')->andReturn($userModel);
         
         $userRepo->shouldReceive('findOrCreateByEmail')->andReturn($user)->times(1);       
         
@@ -147,13 +155,17 @@ class AppHttpControllerAuthTest extends TestCase
      */
     public function testFirstLoginTryUnSuccess()
     {       
+        
+        $userModel = m::mock('App\user');
              
         $user = m::mock('App\Contracts\Auth\ClearSettleAuthenticatable');
                 
          // mocked user repository
         $userRepo = m::mock('App\Contracts\Repository\User');
         
-        $userRepo->shouldReceive('findOrCreateByEmail')->andReturn($user)->times(1);       
+        $userRepo->shouldReceive('findOrCreateByEmail')->andReturn($user)->times(1);   
+        
+        $userRepo->shouldReceive('getModel')->andReturn($userModel);
         
         $this->app->instance('App\Contracts\Repository\User', $userRepo);               
         

@@ -16,7 +16,7 @@
                 width: 100%;
                 display: table;
                 font-weight: 100;
-                font-family: 'Lato';
+                font-family: 'Arial';
             }
 
             .container {
@@ -31,23 +31,17 @@
             }
 
             .title {
-                font-size: 96px;    
+                font-size: 20px;    
             }
         </style>
     </head>
     <body>
 
-        @if(Auth::check())
-        <div class="container">
-            <div class="content">
-                <div class="title">You are log in System !</div>
-            </div>
-        </div>
-        @endif
-        <div class="container">
-            <div class="content">
-                <div class="title">Laravel 5</div>
-            </div>
-        </div>
+        @if(Auth::check())       
+           
+            <h2>You are log in System !</h2>      
+        @endif        
+        
+        <div class="title">Laravel 5</div>               
     </body>
 </html>

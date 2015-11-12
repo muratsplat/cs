@@ -21,9 +21,9 @@ Route::get('login', 'Auth\AuthController@getLogin');
 Route::post('login', 'Auth\AuthController@postLogin');
 Route::get('logout', 'Auth\AuthController@getLogout');
 
-Route::group(['prefix' => 'console', 'middleware' => [ 'cs.jwt']], function(){    
+Route::group(['prefix' => 'console', 'middleware' => [ 'auth', 'cs.jwt']], function(){    
     
-    Route::get('welcome', function() { return 'test';});
+    Route::get('welcome', 'Console@getIndex');
 });
 
 // EveryBody can access these paths !!!!!!

@@ -18,7 +18,9 @@ class UserShouldHasJWT
         if ( $this->userHasJWT() ) {
             
             return $next($request);          
-        }        
+        }
+        
+        \Auth::logout();
         
         return redirect()
                 ->action('Auth\AuthController@getLogin')
@@ -34,7 +36,7 @@ class UserShouldHasJWT
     protected function userHasJWT()
     {
         $user = \Auth::getUser();
-        
+            
         if ( is_null($user) ) {
             
             return false;
