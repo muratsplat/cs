@@ -49,4 +49,11 @@ class UserShouldHasJWT
 
         return false;
     }
+    
+    
+    
+    
+    
+    
+    
 }

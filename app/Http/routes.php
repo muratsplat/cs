@@ -24,6 +24,9 @@ Route::get('logout', 'Auth\AuthController@getLogout');
 Route::group(['prefix' => 'console', 'middleware' => [ 'auth', 'cs.jwt']], function(){    
     
     Route::get('welcome', 'Console@getIndex');
+    
+    Route::resource('transaction', 'TransactionApi');
+    
 });
 
 // EveryBody can access these paths !!!!!!

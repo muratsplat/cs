@@ -2,7 +2,9 @@
 
 namespace App\Contracts\Auth;
 
-interface ClearSettleEloquentPayload
+use \Illuminate\Contracts\Auth\Authenticatable;
+
+interface ClearSettleEloquentPayload extends Authenticatable
 {     
    
     /**
