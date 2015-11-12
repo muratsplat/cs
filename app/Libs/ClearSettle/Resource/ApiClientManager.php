@@ -41,7 +41,8 @@ class ApiClientManager {
      */
     protected $requests = [
         
-        'user'  => \App\Libs\ClearSettle\Resource\Request\User::class,
+        'user'          => \App\Libs\ClearSettle\Resource\Request\User::class,
+        'transaction'   => \App\Libs\ClearSettle\Resource\Request\Transaction::class,
     ];
     
         /**

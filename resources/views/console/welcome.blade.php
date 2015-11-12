@@ -43,12 +43,33 @@
             <h2> User: <a href="#" alt="User Details">{{$user->email}}</a> </h2>
         
         @endif
-        <h3>Jobs</h3>
+        <h3>Methods</h3>
         <ul>            
-            <li>Use Create</li>
+            <li>
+                Get Transaction Reports : <br>
+                {!! Form::open( ['action' => 'TransactionApi@postReport'] )!!}
+                    {!! Form::label('fromDate', 'From Date*') !!}
+                    {!! Form::text('fromDate', '1970-12-01') !!}
+
+                    {!! Form::label('toDate', 'To Date*') !!}
+                    {!! Form::text('toDate', '2015-12-01') !!}
+
+                    {!! Form::label('merchant', 'Merchant ID') !!}
+                    {!! Form::text('merchant', null) !!}
+
+                    {!! Form::label('acquirer', 'Acquirer ID') !!}
+                    {!! Form::text('acquirer', null) !!}
+                    <br>
+                    {!! Form::submit('Show') !!}
+
+                {!! Form::close()!!} 
+
+            </li>
             <li>User Update</li>
             <li>User info</li>
             <li>User </li>
-        </ul>s       
+        </ul>
+
+
     </body>
 </html>

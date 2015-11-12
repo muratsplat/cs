@@ -27,6 +27,8 @@ Route::group(['prefix' => 'console', 'middleware' => [ 'auth', 'cs.jwt']], funct
     
     Route::resource('transaction', 'TransactionApi');
     
+    Route::post('transaction/report', 'TransactionApi@postReport');
+    
 });
 
 // EveryBody can access these paths !!!!!!
