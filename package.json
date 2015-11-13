@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "devDependencies": {
+  },
+  "dependencies": {
+    "laravel-elixir": "^3.0.0"
+  }
+}
