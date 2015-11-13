@@ -1,12 +1,12 @@
 <?php
 
 // for Heroku DB
-$url = parse_url(getenv("DATABASE_URL"));
+$url        = parse_url(getenv("DATABASE_URL"));
 
-$host = $url["host"];
-$username = $url["user"];
-$password = $url["pass"];
-$database = substr($url["path"], 1);
+$host       = array_get($url, "host", null);
+$username   = array_get($url, "user", null);
+$password   = array_get($url, "pass", null);
+$database   = substr(array_get($url, "path"), 1);
 
 return [
 
