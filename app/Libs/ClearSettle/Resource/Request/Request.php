@@ -247,7 +247,7 @@ abstract class Request implements MessageProvider
             
             $body = $this->getBodyOnResponse();
                        
-            $jSon = json_decode($body);   
+            $jSon = json_decode($body, false);   
                 
             return is_object($jSon);
         }
