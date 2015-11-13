@@ -3,5 +3,5 @@
 /nbproject
 Homestead.yaml
 Homestead.json
-.env
+env
 _ide_helper.php
