@@ -43,5 +43,8 @@
         @endif        
         
         <div class="title">Laravel 5</div>               
+
+        <br>
+        <a href="{{action('Auth\AuthController@getLogin')}}"> Login</a>
     </body>
 </html>
